@@ -1,6 +1,6 @@
-# env-testing
+# Bin test calendar
 
-> env package fs bug
+> Bin test calendar
 
 ## Build Setup
 

@@ -1,7 +1,7 @@
 {
-  "name": "env-testing",
+  "name": "bin-calendar",
   "version": "1.0.0",
-  "description": "env package fs bug",
+  "description": "bin test calendar",
   "author": "aholland909",
   "private": true,
   "scripts": {
@@ -16,6 +16,7 @@
     "buefy": "^0.8.20",
     "node-sass": "^4.14.1",
     "nuxt": "^2.0.0",
+    "nuxt-buefy": "^0.3.31",
     "sass-loader": "^8.0.2"
   },
   "devDependencies": {}
