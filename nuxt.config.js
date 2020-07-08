@@ -57,7 +57,6 @@ export default {
   },
   router: {
     // middleware: 'redirect'
-    middleware: 'authenticated'
   },
   /*
   ** Build configuration
