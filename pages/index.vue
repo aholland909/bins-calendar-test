@@ -86,8 +86,8 @@ export default {
         this.isFetching = true;
         axios
           .get(
-            process.env.CORSANYWHERE +
-              process.env.RBCAPI +
+            "https://cors-anywhere.herokuapp.com/" +
+              "http://3.9.226.211/" +
               "rbc/getaddresses/" +
               name
           )
@@ -141,8 +141,8 @@ export default {
       this.selected = selected;
       axios
         .get(
-          process.env.CORSANYWHERE +
-            process.env.RBCAPI +
+          "https://cors-anywhere.herokuapp.com/" +
+            "http://3.9.226.211/" +
             "/rbc/mycollections/" +
             this.selected.AccountSiteUprn
         )
