@@ -103,6 +103,9 @@ export default {
           .catch(error => {
             this.data = [];
             throw error;
+          })
+          .finally(() => {
+          this.isFetching = false;
           });
       } else {
         this.data = [];
@@ -154,10 +157,7 @@ export default {
         .catch(error => {
           this.data = [];
           throw error;
-        })
-        .finally(() => {
-          this.isFetching = false;
-        });
+        });        
     },
     formatDate(date) {
       var d = new Date(date);
