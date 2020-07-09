@@ -4,7 +4,7 @@
       <h1 class="subtitle">Bin test calendar</h1>
       <b-field class="mainsearch">
         <b-autocomplete
-          style="display:inline-block;width:50%;"
+          class="searchbox"
           size="is-large"
           v-model="name"
           ref="autocomplete"
@@ -21,7 +21,13 @@
               <div class="media-content search-result">{{props.option.SiteShortAddress}}</div>
             </div>
           </template>
+
           <template slot="empty">No results for {{name}}</template>
+          <template slot="footer">
+            <a @click="addressFindError">
+              <span>Can't find address?</span>
+            </a>
+          </template>
         </b-autocomplete>
         <b-button
           @click.stop="$refs.autocomplete.focus()"
@@ -37,14 +43,17 @@
       <br />
       <div v-if="collections.length">{{collections}}</div>-->
 
+      <div v-if="collectionsError">
+        <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
+      </div>
       <div v-if="collections.length">
-        <div v-for="c in collections" :key="c">
+        <div v-for="c in collections" :key="c.id">
           <div class="tile is-ancestor">
             <div class="tile is-vertical is-parent">
               <div class="tile is-child box">
                 <p class="title is-2">{{c.Service}}</p>
                 <!-- <p>{{c.Day}}</p> -->
-                <p>{{c.Date}}</p>
+                <p>{{formatDate(c.Date)}}</p>
               </div>
             </div>
           </div>
@@ -68,13 +77,11 @@ export default {
       isFetching: false,
       isExpanded: false,
       addresses: [],
-      collections: []
+      collections: [],
+      collectionsError: false
       // wp: process.env.WP_URL,
       // base_url: process.env.BASE_URL,
     };
-  },
-  computed: {
-    async filteredDataArray() {}
   },
   methods: {
     getAsyncData: debounce(function(name) {
@@ -105,7 +112,7 @@ export default {
             throw error;
           })
           .finally(() => {
-          this.isFetching = false;
+            this.isFetching = false;
           });
       } else {
         this.data = [];
@@ -141,34 +148,59 @@ export default {
     },
 
     selectAddress(selected) {
+      this.isFetching = true;
       this.selected = selected;
       axios
         .get(
           "https://cors-anywhere.herokuapp.com/" +
             "http://3.9.226.211/" +
-            "/rbc/mycollections/" +
+            "rbc/mycollections/" +
             this.selected.AccountSiteUprn
         )
         .then(({ data }) => {
           this.collections = [];
-
-          data.Collections.forEach(item => this.collections.push(item));
+          if (data.Error == "No results returned") {
+            this.collectionsError = true;
+          } else {
+            data.Collections.forEach(item => this.collections.push(item));
+            this.collectionsError = false;
+          }
         })
         .catch(error => {
           this.data = [];
           throw error;
-        });        
+        })
+        .finally(() => {
+          this.isFetching = false;
+        });
     },
     formatDate(date) {
-      var d = new Date(date);
-
-      return;
+      // var d = new Date(date);
+      return date.split(" ")[0];
+    },
+    addressFindError() {
+      this.$buefy.dialog.alert({
+        title: "Can't find address?",
+        message: "Are you sure it's a Reading postcode?",
+        confirmText: "Ok!"
+      });
     }
   }
 };
 </script>
 
 <style>
+.searchbox {
+  display: inline-block;
+  width: 50%;
+}
+
+@media screen and (max-width: 600px) {
+  .searchbox {
+    display: inline-block;
+    width: 85%;
+  }
+}
 .mainsearch {
   display: flex !important;
   justify-content: center !important;
