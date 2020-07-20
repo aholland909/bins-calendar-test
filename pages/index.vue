@@ -46,16 +46,17 @@
       <div v-if="collectionsError">
         <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
       </div>
-      <div v-if="collections.length">
-        <div v-for="c in collections" :key="c.id">
-          <div class="tile is-ancestor">
-            <div class="tile is-vertical is-parent">
-              <div class="tile is-child box">
-                <p class="title is-2">{{c.Service}}</p>
-                <!-- <p>{{c.Day}}</p> -->
-                <p>{{formatDate(c.Date)}}</p>
-              </div>
-            </div>
+
+      <div class="tile is-ancestor">
+        <div v-if="collections.length" class="tile is-vertical is-parent">
+          <div class="tile is-child box">
+            <p class="title is-2">Collections for...</p>
+            <p>{{selected.SiteShortAddress}}</p>
+          </div>
+          <div v-for="c in collections" :key="c.id" class="tile is-child box">
+            <p class="title is-2">{{c.Service}}</p>
+            <!-- <p>{{c.Day}}</p> -->
+            <p>{{getDay(c.Date)}} - {{formatDate(c.Date)}}</p>
           </div>
         </div>
       </div>
@@ -148,6 +149,8 @@ export default {
     },
 
     selectAddress(selected) {
+      this.collections = [];
+
       this.isFetching = true;
       this.selected = selected;
       axios
@@ -178,6 +181,25 @@ export default {
       // var d = new Date(date);
       return date.split(" ")[0];
     },
+    dateFormatter(dateString) {
+      var reggie = /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/;
+      var dateArray = reggie.exec(dateString);
+      // console.log(dateArray)
+      var dateObject = new Date(
+        +dateArray[3],
+        +dateArray[2] - 1, // Careful, month starts at 0!
+        +dateArray[1],
+        +dateArray[4],
+        +dateArray[5],
+        +dateArray[6]
+      );
+      return dateObject;
+    },
+    getDay(date){
+      var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var d = this.dateFormatter(date)
+      return days[d.getDay()]
+    },
     addressFindError() {
       this.$buefy.dialog.alert({
         title: "Can't find address?",
@@ -190,6 +212,9 @@ export default {
 </script>
 
 <style>
+.tile.is-vertical > .tile.is-child:not(:last-child) {
+  margin-bottom: 1rem !important;
+}
 .searchbox {
   display: inline-block;
   width: 50%;
