@@ -212,6 +212,9 @@ export default {
 </script>
 
 <style>
+.tile {
+  flex-basis: auto;
+}
 .tile.is-vertical > .tile.is-child:not(:last-child) {
   margin-bottom: 1rem !important;
 }
