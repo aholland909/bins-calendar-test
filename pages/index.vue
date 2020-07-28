@@ -57,8 +57,28 @@
             <!-- <p>{{c.Day}}</p> -->
             <p>{{getDay(c.Date)}} - {{formatDate(c.Date)}}</p>
             <div class="bin-image" id="icon">
-                <img class="image is-64x64" :src="getImage(c.Service)" fill="white" />
+              <img class="image is-64x64" :src="getImage(c.Service)" fill="white" />
+            </div>
+
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" :open="false">
+              <div
+                slot="trigger"
+                slot-scope="props"
+                class="card-header"
+                role="button"
+                aria-controls="contentIdForA11y3"
+              >
+                <p class="card-header-title" style="font-weight:300">What can I put in this bin?</p>
+                <a class="card-header-icon">
+                  <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                </a>
               </div>
+              <div class="card-content">
+                <div class="content" v-for="i in binContent(c.Service)" :key="i.id">
+                  <p>{{i}}</p>
+                </div>
+              </div>
+            </b-collapse>
           </div>
         </div>
       </div>
@@ -431,28 +451,26 @@ export default {
       isExpanded: false,
       addresses: [],
       collections: [
-        
-          {
-            Date: "30/07/2020 00:00:00",
-            Day: "Thursday",
-            Service: "Recycling Collection Service",
-          },
-          {
-            Date: "06/08/2020 00:00:00",
-            Day: "Thursday",
-            Service: "Domestic Waste Collection Service",
-          },
-          {
-            Date: "13/08/2020 00:00:00",
-            Day: "Thursday",
-            Service: "Recycling Collection Service",
-          },
-          {
-            Date: "20/08/2020 00:00:00",
-            Day: "Thursday",
-            Service: "Domestic Waste Collection Service",
-          },
-        
+        {
+          Date: "30/07/2020 00:00:00",
+          Day: "Thursday",
+          Service: "Recycling Collection Service",
+        },
+        {
+          Date: "06/08/2020 00:00:00",
+          Day: "Thursday",
+          Service: "Domestic Waste Collection Service",
+        },
+        {
+          Date: "13/08/2020 00:00:00",
+          Day: "Thursday",
+          Service: "Recycling Collection Service",
+        },
+        {
+          Date: "20/08/2020 00:00:00",
+          Day: "Thursday",
+          Service: "Domestic Waste Collection Service",
+        },
       ],
       collectionsError: false,
       // wp: process.env.WP_URL,
@@ -590,7 +608,7 @@ export default {
         confirmText: "Ok!",
       });
     },
-    changeServiceName(serviceName){
+    changeServiceName(serviceName) {
       if (serviceName == "Recycling Collection Service") {
         return "Recycling (red bin)";
       }
@@ -604,7 +622,7 @@ export default {
         return "Food";
       }
     },
-    getImage(serviceName){
+    getImage(serviceName) {
       if (serviceName == "Recycling Collection Service") {
         return require("~/assets/icons/" + "redWaste.svg");
       }
@@ -617,13 +635,52 @@ export default {
       if (serviceName == "Food Waste Collection Service") {
         return require("~/assets/icons/" + "foodWaste.svg");
       }
-    }
-
+    },
+    binContent(serviceName) {
+      if (serviceName == "Recycling Collection Service") {
+        var array = [
+          "✓ Plastic bottles (e.g. drinks, milk, toiletries, detergent)",
+          "✓ Plastic pots (e.g. yoghurt, cream, snack, soup)",
+          "✓ Plastic trays (e.g. fruit punnets, meat/cake trays)",
+          "✓ Plastic tubs (e.g. ice cream, margarine, sweets tubs)",
+          "✓ Paper and card",
+          "✓ Cartons (Tetra Pak) cartons (e.g. juice, milk, soup cartons)",
+          "✓ Clean foil and foil trays",
+          "✓ Tins and cans (e.g. drink cans, food tins, biscuit or sweet tins - please rinse)",
+          "✓ Empty aerosol cans (e.g. deodorant, air freshener, hairspray, de-icer)",
+          "✓ Shredded paper (must be contained in a small cardboard box or envelope)",
+        ];
+        return array;
+      }
+      if (serviceName == "Domestic Waste Collection Service") {
+        var array = [
+          "✓ Non-recyclable rubbish",
+          "✓ Nappies",
+          "✓ Hygiene waste (incontinence articles, catheters etc.)",
+        ];
+        return array;
+      }
+      if (serviceName == "Garden Waste Collection Service") {
+        var array = [
+          "✓ Grass and hedge cuttings",
+          "✓ Leaves, plants and weeds",
+          "✓ Untreated wood and branches up to 100mm thick",
+        ];
+        return array;
+      }
+      if (serviceName == "Food Waste Collection Service") {
+        var array = ["Food"];
+        return array;
+      }
+    },
   },
 };
 </script>
 
 <style>
+.card {
+  margin-top: 100px !important;
+}
 .tile {
   flex-basis: auto;
 }
@@ -634,7 +691,6 @@ export default {
   display: inline-block;
   width: 50%;
 }
-
 
 .mainsearch {
   display: flex !important;
@@ -684,7 +740,7 @@ export default {
   min-width: 320px;
 }
 .title.is-2 {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 p {
   font-size: 1.5rem;
@@ -696,7 +752,7 @@ p {
     width: 100%;
   }
   .box {
-  width: 100%;
-}
+    width: 100%;
+  }
 }
 </style>
