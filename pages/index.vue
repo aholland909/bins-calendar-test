@@ -10,30 +10,34 @@
           ref="autocomplete"
           :data="data"
           :loading="isFetching"
-          :open-on-focus="true"
+          :open-on-focus="false"
           :clear-on-select="false"
-          placeholder="Enter postcode"
+          placeholder="e.g. RG1 2LU"
+          icon="earth"
           @typing="getAsyncData"
           @select="selectAddress"
         >
           <template slot-scope="props">
             <div class="media">
-              <div class="media-content search-result">{{props.option.SiteShortAddress}}</div>
+              <div class="media-content search-result"><p>{{props.option.SiteShortAddress}}</p></div>
             </div>
           </template>
 
           <template slot="empty">No results for {{name}}</template>
           <template slot="footer">
+        
+              <p>
             <a @click="addressFindError">
-              <span>Can't find address?</span>
+              <span>Your address not found?</span>
             </a>
+            </p>
           </template>
         </b-autocomplete>
         <b-button
           @click.stop="$refs.autocomplete.focus()"
           size="is-large"
           type="is-primary"
-          style="width:10%"
+          style="width:5%"
         >
           <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
         </b-button>
@@ -43,8 +47,9 @@
       <br />
       <div v-if="collections.length">{{collections}}</div>-->
 
-      <div v-if="collectionsError">
-        <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
+      <div v-if="collectionsError" class="tile is-child box">
+        <p>No kerbside collection for {{selected.SiteShortAddress}}.</p>
+        <p>If this property is a flat there will be an alternative collection arrangement.</p>
       </div>
 
       <div class="tile is-ancestor">
@@ -603,9 +608,9 @@ export default {
     },
     addressFindError() {
       this.$buefy.dialog.alert({
-        title: "Can't find address?",
-        message: "Are you sure it's a Reading postcode?",
-        confirmText: "Ok!",
+        title: "Shucks! We may not be your council :-(",
+        message: "Check who your local authority is https://www.gov.uk/find-local-council",
+        confirmText: "Close",
       });
     },
     changeServiceName(serviceName) {
@@ -669,7 +674,24 @@ export default {
         return array;
       }
       if (serviceName == "Food Waste Collection Service") {
-        var array = ["Food"];
+        var array = [
+          "✓ All uneaten food and plate scrapings",
+          "✓ Cheese",
+          "✓ Eggs",
+          "✓ Bread",
+          "✓ Cakes",
+          "✓ Pastries",
+          "✓ Raw meat",
+          "✓ Cooked meat",
+          "✓ Meat bones",
+          "✓ Tea bags",
+          "✓ Coffee grounds",
+          "✓ Raw vegetables",
+          "✓ Cooked vegetables",
+          "✓ Whole fruit",
+          "✓ Fruit and vegatable peelings",
+          "✓ Raw fish",
+];
         return array;
       }
     },
@@ -689,22 +711,25 @@ export default {
 }
 .searchbox {
   display: inline-block;
-  width: 50%;
+  width: 100%;
 }
 
 .mainsearch {
   display: flex !important;
   justify-content: left !important;
 }
+
 .binform {
   padding-top: 2rem;
-  width: 100%;
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 80%;
 }
 .container {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: flex-start;
   text-align: left;
 }
@@ -736,8 +761,8 @@ export default {
 }
 .box {
   border-radius: 0 !important;
-  width: 60%;
-  min-width: 320px;
+  width: 100%;
+
 }
 .title.is-2 {
   font-size: 1.5rem;
@@ -746,13 +771,21 @@ p {
   font-size: 1.5rem;
   font-weight: 300;
 }
-@media screen and (max-width: 600px) {
-  .searchbox {
-    display: inline-block;
-    width: 100%;
-  }
-  .box {
+.input {
+  border-radius: none !important;
+}
+.button {
+  background-color: black !important;
+  border-radius: 0%;
+}
+
+.input-shadow {
+  color: black !important;
+}
+@media only screen and (max-width: 700px) {
+  .binform {
     width: 100%;
   }
 }
+
 </style>
