@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" id="nodeToRenderAsPDF">
     <div class="binform">
       <h1 class="subtitle">When is my bin collected?</h1>
       <b-field class="mainsearch">
@@ -38,6 +38,13 @@
           <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
         </b-button>
       </b-field>
+
+      <b-button @click="downloadWithCSS">Download PDF WITH CSS</b-button>
+      <br />
+      <br />
+      <b-button @click="download">Download PDF WITHOUT CSS</b-button>
+      <br />
+      <br />
 
       <!-- <div v-if="selected">{{selected}}</div>
       <br />
@@ -671,6 +678,34 @@ export default {
       if (serviceName == "Food Waste Collection Service") {
         var array = ["Food"];
         return array;
+      }
+    },
+    downloadWithCSS() {
+      if (process.browser) {
+        const filename = "ThisIsYourPDFFilename.pdf";
+        const jsPDF = require("jspdf");
+        const html2canvas = require("html2canvas");
+
+        var canvasElement = document.createElement("canvas");
+        html2canvas(document.querySelector("#nodeToRenderAsPDF")).then(
+          (canvas) => {
+            let pdf = new jsPDF("p", "mm", "a4");
+            pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 211, 298);
+            pdf.save(filename);
+          }
+        );
+      }
+    },
+    download() {
+      if (process.browser) {
+        const jsPDF = require("jspdf");
+        let doc = new jsPDF();
+        /** WITHOUT CSS */
+        const contentHtml = this.$refs.content.innerHTML;
+        doc.fromHTML($(".container"), get(0), 15, 15, {
+          width: 170,
+        });
+        doc.save("withoutCSS.pdf");
       }
     },
   },
