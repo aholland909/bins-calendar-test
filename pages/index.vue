@@ -2,7 +2,7 @@
   <div class="container">
     <div class="binform">
       <h1 class="subtitle">When is my bin collected?</h1>
-      <b-field class="mainsearch">
+      <b-field class="mainsearch" type="is-black">
         <b-autocomplete
           class="searchbox"
           size="is-large"
