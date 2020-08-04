@@ -76,7 +76,7 @@
               >
                 <p class="card-header-title" style="font-weight:300">What can I put in this bin?</p>
                 <a class="card-header-icon">
-                  <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                  <b-icon type="is-black" :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
                 </a>
               </div>
               <div class="card-content">
@@ -240,7 +240,7 @@ export default {
       this.$buefy.dialog.alert({
         title: "Shucks! We may not be your council :-(",
         message:
-          "Check who your local authority is https://www.gov.uk/find-local-council",
+          "Check who your local authority is <a href=\"https://www.gov.uk/find-local-council\">here</a>",
         confirmText: "Close",
       });
     },
