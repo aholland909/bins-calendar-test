@@ -307,21 +307,6 @@ export default {
       if (serviceName == "Food Waste Collection Service") {
         var array = [
           "✓ All uneaten food and plate scrapings",
-          "✓ Cheese",
-          "✓ Eggs",
-          "✓ Bread",
-          "✓ Cakes",
-          "✓ Pastries",
-          "✓ Raw meat",
-          "✓ Cooked meat",
-          "✓ Meat bones",
-          "✓ Tea bags",
-          "✓ Coffee grounds",
-          "✓ Raw vegetables",
-          "✓ Cooked vegetables",
-          "✓ Whole fruit",
-          "✓ Fruit and vegatable peelings",
-          "✓ Raw fish",
         ];
         return array;
       }
