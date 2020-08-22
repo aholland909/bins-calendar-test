@@ -121,12 +121,7 @@ export default {
       if (this.valid_postcode(name)) {
         this.isFetching = true;
         axios
-          .get(
-            "https://cors-anywhere.herokuapp.com/" +
-              "http://3.9.226.211/" +
-              "rbc/getaddresses/" +
-              name
-          )
+          .get("https://api.reading.gov.uk/rbc/getaddresses/" + name)
           .then(({ data }) => {
             this.data = [];
             if (data.Addresses != null) {
@@ -183,9 +178,7 @@ export default {
       this.selected = selected;
       axios
         .get(
-          "https://cors-anywhere.herokuapp.com/" +
-            "http://3.9.226.211/" +
-            "rbc/mycollections/" +
+          "https://api.reading.gov.uk/rbc/mycollections/" +
             this.selected.AccountSiteUprn
         )
         .then(({ data }) => {
@@ -240,7 +233,7 @@ export default {
       this.$buefy.dialog.alert({
         title: "Shucks! We may not be your council :-(",
         message:
-          "Check who your local authority is <a href=\"https://www.gov.uk/find-local-council\">here</a>",
+          'Check who your local authority is <a href="https://www.gov.uk/find-local-council">here</a>',
         confirmText: "Close",
       });
     },
@@ -305,9 +298,7 @@ export default {
         return array;
       }
       if (serviceName == "Food Waste Collection Service") {
-        var array = [
-          "✓ All uneaten food and plate scrapings",
-        ];
+        var array = ["✓ All uneaten food and plate scrapings"];
         return array;
       }
     },
