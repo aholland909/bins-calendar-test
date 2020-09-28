@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <div class="binform">
-      <h1 class="subtitle">When is my bin collected?</h1>
+      <h1 class="subtitle">Bin test calendar</h1>
+      <h1 class="subtitle">rg304tr</h1>
       <b-field class="mainsearch">
         <b-autocomplete
           class="searchbox"
@@ -10,80 +11,97 @@
           ref="autocomplete"
           :data="data"
           :loading="isFetching"
-          :open-on-focus="false"
+          :open-on-focus="true"
           :clear-on-select="false"
-          placeholder="e.g. RG1 2LU"
-          icon="earth"
+          placeholder="Enter postcode"
           @typing="getAsyncData"
           @select="selectAddress"
         >
           <template slot-scope="props">
             <div class="media">
-              <div class="media-content search-result"><p>{{props.option.SiteShortAddress}}</p></div>
+              <div class="media-content search-result">{{props.option.SiteShortAddress}}</div>
             </div>
           </template>
 
           <template slot="empty">No results for {{name}}</template>
           <template slot="footer">
-        
-              <p>
             <a @click="addressFindError">
-              <span>Your address not found?</span>
+              <span>Can't find address?</span>
             </a>
-            </p>
           </template>
         </b-autocomplete>
         <b-button
           @click.stop="$refs.autocomplete.focus()"
           size="is-large"
           type="is-primary"
-          style="width:5%"
+          style="width:10%"
         >
           <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
         </b-button>
       </b-field>
+      <div class="slide-container">
+        <b-field>
+          <!-- <div class="slide-controls">
+            <b-switch v-model="byCalendar" @input="switchCheck(byCalendar, byDateRange)">By calendar</b-switch>
+          </div>
+          <div class="slide-controls">
+            <b-switch
+              v-model="byDateRange"
+              @input="switchCheck(byCalendar, byDateRange)"
+            >By date range</b-switch>
+          </div>-->
+          <div class="slide-controls">
+            <b-button style="color:white" @click="gotoFullYear()">Get full year</b-button>
+            <!-- <b-switch v-model="getYear" @input="yearOutput()">Get year data</b-switch> -->
+          </div>
+        </b-field>
+      </div>
 
+      <div v-if="byCalendar" style="display: inline-block;">
+        <br />
+        <b-datepicker inline v-model="date" :events="collectionDisplay" indicators="bars"></b-datepicker>
+        <br />
+      </div>
+
+      <div v-if="byDateRange" style="display: inline-block;">
+        <b-field label="Select a date">
+          <b-datepicker
+            ref="datepicker"
+            placeholder
+            :mobile-native="false"
+            :events="collectionDisplay"
+            :date-formatter="dateFormat"
+            v-model="dates"
+            @input="dateChange()"
+            range
+          ></b-datepicker>
+        </b-field>
+        <br />
+      </div>
+      <!-- data -->
       <!-- <div v-if="selected">{{selected}}</div>
       <br />
       <div v-if="collections.length">{{collections}}</div>-->
 
-      <div v-if="collectionsError" class="tile is-child box">
-        <p>No kerbside collection for {{selected.SiteShortAddress}}.</p>
-        <p>If this property is a flat there will be an alternative collection arrangement.</p>
+      <div v-if="collectionsError">
+        <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
       </div>
-
-      <div class="tile is-ancestor">
-        <div v-if="collections.length" class="tile is-vertical is-parent">
-          <div class="tile is-child box">
-            <p class="title is-2">Address: {{selected.SiteShortAddress}}</p>
-          </div>
-          <div v-for="c in collections" :key="c.id" class="tile is-child box">
-            <p class="title is-2">{{changeServiceName(c.Service)}}</p>
-            <!-- <p>{{c.Day}}</p> -->
-            <p>{{getDay(c.Date)}} - {{formatDate(c.Date)}}</p>
-            <div class="bin-image" id="icon">
-              <img class="image is-64x64" :src="getImage(c.Service)" fill="white" />
+      <!-- output year collection to test -->
+      <div v-if="getYear">
+        <div v-for="c in collections" :key="c.id">
+          <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
+        </div>
+      </div>
+      <div v-if="collections.length && !getYear">
+        <div v-for="c in collections" :key="c.id">
+          <div class="tile is-ancestor">
+            <div class="tile is-vertical is-parent">
+              <div class="tile is-child box">
+                <p class="title is-2">{{c.Service}}</p>
+                <!-- <p>{{c.Day}}</p> -->
+                <p>{{formatDate(c.Date)}}</p>
+              </div>
             </div>
-
-            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" :open="false">
-              <div
-                slot="trigger"
-                slot-scope="props"
-                class="card-header"
-                role="button"
-                aria-controls="contentIdForA11y3"
-              >
-                <p class="card-header-title" style="font-weight:300">What can I put in this bin?</p>
-                <a class="card-header-icon">
-                  <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-                </a>
-              </div>
-              <div class="card-content">
-                <div class="content" v-for="i in binContent(c.Service)" :key="i.id">
-                  <p>{{i}}</p>
-                </div>
-              </div>
-            </b-collapse>
           </div>
         </div>
       </div>
@@ -94,395 +112,53 @@
 <script>
 import axios from "axios";
 import debounce from "lodash/debounce";
+import defer from "promise-defer";
 
 export default {
   data() {
     return {
       name: "",
-      data: [
-        [
-          {
-            AccountSiteId: "33602",
-            AccountSiteUprn: "310014179",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467327.0",
-            SiteId: "119",
-            SiteLatitude: "51.4588861255",
-            SiteLongitude: "-1.03232862226",
-            SiteNorthing: "173769.0",
-            SiteShortAddress: "1, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "41554",
-            AccountSiteUprn: "310014184",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467327.0",
-            SiteId: "30784",
-            SiteLatitude: "51.4588861255",
-            SiteLongitude: "-1.03232862226",
-            SiteNorthing: "173769.0",
-            SiteShortAddress: "3, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "81369",
-            AccountSiteUprn: "310028424",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467332.0",
-            SiteId: "45569",
-            SiteLatitude: "51.4587776493",
-            SiteLongitude: "-1.03225894749",
-            SiteNorthing: "173757.0",
-            SiteShortAddress: "5, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "34138",
-            AccountSiteUprn: "310019831",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467330.0",
-            SiteId: "54891",
-            SiteLatitude: "51.4587509161",
-            SiteLongitude: "-1.03228829997",
-            SiteNorthing: "173754.0",
-            SiteShortAddress: "7, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "19105",
-            AccountSiteUprn: "310012860",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467327.0",
-            SiteId: "61850",
-            SiteLatitude: "51.4586793507",
-            SiteLongitude: "-1.03233299386",
-            SiteNorthing: "173746.0",
-            SiteShortAddress: "9, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "12715",
-            AccountSiteUprn: "310007971",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467326.0",
-            SiteId: "4219",
-            SiteLatitude: "51.4586435086",
-            SiteLongitude: "-1.03234814521",
-            SiteNorthing: "173742.0",
-            SiteShortAddress: "11, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "36641",
-            AccountSiteUprn: "310003124",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467325.0",
-            SiteId: "8606",
-            SiteLatitude: "51.4585717056",
-            SiteLongitude: "-1.03236405678",
-            SiteNorthing: "173734.0",
-            SiteShortAddress: "13, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "62393",
-            AccountSiteUprn: "310056833",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467323.0",
-            SiteId: "11724",
-            SiteLatitude: "51.4585359822",
-            SiteLongitude: "-1.03239359912",
-            SiteNorthing: "173730.0",
-            SiteShortAddress: "15, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "41216",
-            AccountSiteUprn: "310002069",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467324.0",
-            SiteId: "14928",
-            SiteLatitude: "51.4584279809",
-            SiteLongitude: "-1.03238148877",
-            SiteNorthing: "173718.0",
-            SiteShortAddress: "17, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "24891",
-            AccountSiteUprn: "310029502",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467316.0",
-            SiteId: "17640",
-            SiteLatitude: "51.458357009",
-            SiteLongitude: "-1.03249813714",
-            SiteNorthing: "173710.0",
-            SiteShortAddress: "19, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "36191",
-            AccountSiteUprn: "310029099",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467316.0",
-            SiteId: "21845",
-            SiteLatitude: "51.458312058",
-            SiteLongitude: "-1.03249908731",
-            SiteNorthing: "173705.0",
-            SiteShortAddress: "21, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "75471",
-            AccountSiteUprn: "310059607",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467291.0",
-            SiteId: "22901",
-            SiteLatitude: "51.4583330058",
-            SiteLongitude: "-1.03285848183",
-            SiteNorthing: "173707.0",
-            SiteShortAddress: "22, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "52326",
-            AccountSiteUprn: "310024506",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467315.0",
-            SiteId: "23982",
-            SiteLatitude: "51.4582762158",
-            SiteLongitude: "-1.0325142384",
-            SiteNorthing: "173701.0",
-            SiteShortAddress: "23, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "50588",
-            AccountSiteUprn: "310061435",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467276.0",
-            SiteId: "25076",
-            SiteLatitude: "51.4580470988",
-            SiteLongitude: "-1.033080424",
-            SiteNorthing: "173675.0",
-            SiteShortAddress: "24, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "6360",
-            AccountSiteUprn: "310008749",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467315.0",
-            SiteId: "26141",
-            SiteLatitude: "51.4582312648",
-            SiteLongitude: "-1.03251518855",
-            SiteNorthing: "173696.0",
-            SiteShortAddress: "25, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "55592",
-            AccountSiteUprn: "310048902",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467275.0",
-            SiteId: "27127",
-            SiteLatitude: "51.4579932761",
-            SiteLongitude: "-1.03309595438",
-            SiteNorthing: "173669.0",
-            SiteShortAddress: "26, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "76324",
-            AccountSiteUprn: "310011796",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467313.0",
-            SiteId: "28025",
-            SiteLatitude: "51.4581505903",
-            SiteLongitude: "-1.03254568066",
-            SiteNorthing: "173687.0",
-            SiteShortAddress: "27, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "73364",
-            AccountSiteUprn: "310003721",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467309.0",
-            SiteId: "29796",
-            SiteLatitude: "51.4580971238",
-            SiteLongitude: "-1.03260438444",
-            SiteNorthing: "173681.0",
-            SiteShortAddress: "29, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "16866",
-            AccountSiteUprn: "310061615",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467308.0",
-            SiteId: "32995",
-            SiteLatitude: "51.4580612817",
-            SiteLongitude: "-1.03261953538",
-            SiteNorthing: "173677.0",
-            SiteShortAddress: "31, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "59683",
-            AccountSiteUprn: "310000564",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467313.0",
-            SiteId: "34516",
-            SiteLatitude: "51.457970786",
-            SiteLongitude: "-1.0325494811",
-            SiteNorthing: "173667.0",
-            SiteShortAddress: "33, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "46466",
-            AccountSiteUprn: "310006010",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467309.0",
-            SiteId: "35992",
-            SiteLatitude: "51.4578993391",
-            SiteLongitude: "-1.03260856465",
-            SiteNorthing: "173659.0",
-            SiteShortAddress: "35, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "26359",
-            AccountSiteUprn: "310001951",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467308.0",
-            SiteId: "37285",
-            SiteLatitude: "51.4578455165",
-            SiteLongitude: "-1.03262409553",
-            SiteNorthing: "173653.0",
-            SiteShortAddress: "37, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "67273",
-            AccountSiteUprn: "310051168",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467305.0",
-            SiteId: "38540",
-            SiteLatitude: "51.4577469803",
-            SiteLongitude: "-1.03266935799",
-            SiteNorthing: "173642.0",
-            SiteShortAddress: "39, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "16108",
-            AccountSiteUprn: "310041991",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467303.0",
-            SiteId: "41117",
-            SiteLatitude: "51.4576932764",
-            SiteLongitude: "-1.03269927952",
-            SiteNorthing: "173636.0",
-            SiteShortAddress: "41, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "20203",
-            AccountSiteUprn: "310032663",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467301.0",
-            SiteId: "42266",
-            SiteLatitude: "51.4576215921",
-            SiteLongitude: "-1.03272958096",
-            SiteNorthing: "173628.0",
-            SiteShortAddress: "43, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "72980",
-            AccountSiteUprn: "310011671",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467297.0",
-            SiteId: "43224",
-            SiteLatitude: "51.4575501451",
-            SiteLongitude: "-1.03278866377",
-            SiteNorthing: "173620.0",
-            SiteShortAddress: "45, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "65878",
-            AccountSiteUprn: "310007323",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467294.0",
-            SiteId: "44175",
-            SiteLatitude: "51.4574336283",
-            SiteLongitude: "-1.03283430549",
-            SiteNorthing: "173607.0",
-            SiteShortAddress: "47, BLUNDELLS ROAD, RG30 4TR",
-          },
-          {
-            AccountSiteId: "7703",
-            AccountSiteUprn: "310006774",
-            SiteAddress2: "BLUNDELLS ROAD",
-            SiteAddressPrefix: "None",
-            SiteEasting: "467293.0",
-            SiteId: "45052",
-            SiteLatitude: "51.4573438448",
-            SiteLongitude: "-1.03285059577",
-            SiteNorthing: "173597.0",
-            SiteShortAddress: "49, BLUNDELLS ROAD, RG30 4TR",
-          },
-        ],
-      ],
+      postcode: "",
+      data: [],
       results: [],
-      selected: {
-        AccountSiteId: "34138",
-        AccountSiteUprn: "310019831",
-        SiteAddress2: "BLUNDELLS ROAD",
-        SiteAddressPrefix: "None",
-        SiteEasting: "467330.0",
-        SiteId: "54891",
-        SiteLatitude: "51.4587509161",
-        SiteLongitude: "-1.03228829997",
-        SiteNorthing: "173754.0",
-        SiteShortAddress: "7, BLUNDELLS ROAD, RG30 4TR",
-      },
+      selected: null,
       isFetching: false,
       isExpanded: false,
       addresses: [],
-      collections: [
-        {
-          Date: "30/07/2020 00:00:00",
-          Day: "Thursday",
-          Service: "Recycling Collection Service",
-        },
-        {
-          Date: "06/08/2020 00:00:00",
-          Day: "Thursday",
-          Service: "Domestic Waste Collection Service",
-        },
-        {
-          Date: "13/08/2020 00:00:00",
-          Day: "Thursday",
-          Service: "Recycling Collection Service",
-        },
-        {
-          Date: "20/08/2020 00:00:00",
-          Day: "Thursday",
-          Service: "Domestic Waste Collection Service",
-        },
-      ],
+      collections: [],
+      longcollections: [],
       collectionsError: false,
+      byCalendar: false,
+      byDateRange: false,
+      getYear: false,
+      previosSwitch: "",
+      collectionDisplay: [],
+      date: [],
+      dates: [],
       // wp: process.env.WP_URL,
       // base_url: process.env.BASE_URL,
     };
   },
   methods: {
+    switchCheck(cal, date) {
+      if (cal == false && date == true) {
+        this.previosSwitch = "byDateRange";
+      }
+      if (cal == true && date == false) {
+        this.previosSwitch = "byCalendar";
+      }
+      if (cal == true && date == true) {
+        if (this.previosSwitch == "byDateRange") {
+          this.byDateRange = false;
+          this.previosSwitch = true;
+          this.previosSwitch = "byCalendar";
+        } else if (this.previosSwitch == "byCalendar") {
+          this.byDateRange = true;
+          this.byCalendar = false;
+          this.previosSwitch = "byDateRange";
+        }
+      }
+    },
     getAsyncData: debounce(function (name) {
       if (!name.length) {
         this.data = [];
@@ -491,12 +167,7 @@ export default {
       if (this.valid_postcode(name)) {
         this.isFetching = true;
         axios
-          .get(
-            "https://cors-anywhere.herokuapp.com/" +
-              "http://3.9.226.211/" +
-              "rbc/getaddresses/" +
-              name
-          )
+          .get("https://api.reading.gov.uk/" + "rbc/getaddresses/" + name)
           .then(({ data }) => {
             this.data = [];
             if (data.Addresses != null) {
@@ -547,24 +218,35 @@ export default {
     },
 
     selectAddress(selected) {
-      this.collections = [];
-
       this.isFetching = true;
+      this.postcode = this.name;
       this.selected = selected;
       axios
         .get(
-          "https://cors-anywhere.herokuapp.com/" +
-            "http://3.9.226.211/" +
+          "https://api.reading.gov.uk/" +
             "rbc/mycollections/" +
             this.selected.AccountSiteUprn
         )
         .then(({ data }) => {
           this.collections = [];
+          this.collectionDisplay = [];
           if (data.Error == "No results returned") {
             this.collectionsError = true;
           } else {
             data.Collections.forEach((item) => this.collections.push(item));
             this.collectionsError = false;
+
+            data.Collections.forEach((item) =>
+              this.collectionDisplay.push({
+                date: this.dateFormatter(item.Date),
+                type: this.getBinColors(item.Service),
+              })
+            );
+            //first date and end date of datepicker
+            this.dates.push(new Date());
+            this.dates.push(
+              this.collectionDisplay[this.collectionDisplay.length - 1].date
+            );
           }
         })
         .catch((error) => {
@@ -574,6 +256,53 @@ export default {
         .finally(() => {
           this.isFetching = false;
         });
+    },
+    getCollectionByDate(uprn, startDate, endDate, collectionsArray) {
+      var deferred = defer();
+      var formattedstartDate =
+        new Date(startDate).getFullYear() +
+        "-" +
+        (new Date(startDate).getMonth() + 1) +
+        "-" +
+        new Date(startDate).getDate();
+      console.log("formatted data " + formattedstartDate);
+      axios
+        .get(
+          "https://api.reading.gov.uk/" +
+            "rbc/mycollections/" +
+            uprn +
+            "/" +
+            formattedstartDate
+        )
+        .then((response) => {
+          // handle success
+          if (response.data.Collections) {
+            if (new Date(startDate) < new Date(endDate)) {
+              response.data.Collections.forEach((item) =>
+                collectionsArray.push(item)
+              );
+              startDate = this.dateFormatter(
+                collectionsArray[collectionsArray.length - 1].Date
+              );
+              this.getCollectionByDate(
+                uprn,
+                startDate,
+                endDate,
+                collectionsArray
+              ).then(function () {
+                deferred.resolve();
+              });
+            } else {
+              deferred.resolve();
+            }
+          }
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
+        });
+
+      return deferred.promise;
     },
     formatDate(date) {
       // var d = new Date(date);
@@ -593,107 +322,107 @@ export default {
       );
       return dateObject;
     },
-    getDay(date) {
-      var days = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-      var d = this.dateFormatter(date);
-      return days[d.getDay()];
-    },
     addressFindError() {
       this.$buefy.dialog.alert({
-        title: "Shucks! We may not be your council :-(",
-        message: "Check who your local authority is https://www.gov.uk/find-local-council",
-        confirmText: "Close",
+        title: "Can't find address?",
+        message: "Are you sure it's a Reading postcode?",
+        confirmText: "Ok!",
       });
     },
-    changeServiceName(serviceName) {
-      if (serviceName == "Recycling Collection Service") {
-        return "Recycling (red bin)";
+    getBinColors(serviceString) {
+      if (serviceString == "Recycling Collection Service") {
+        return "is-recycling";
       }
-      if (serviceName == "Domestic Waste Collection Service") {
-        return "Rubbish (grey bin)";
+      if (serviceString == "Domestic Waste Collection Service") {
+        return "is-rubbish";
       }
-      if (serviceName == "Garden Waste Collection Service") {
-        return "Garden (green bin)";
+      if (serviceString == "Garden Waste Collection Service") {
+        return "is-garden";
       }
-      if (serviceName == "Food Waste Collection Service") {
-        return "Food";
-      }
-    },
-    getImage(serviceName) {
-      if (serviceName == "Recycling Collection Service") {
-        return require("~/assets/icons/" + "redWaste.svg");
-      }
-      if (serviceName == "Domestic Waste Collection Service") {
-        return require("~/assets/icons/" + "greyWaste.svg");
-      }
-      if (serviceName == "Garden Waste Collection Service") {
-        return require("~/assets/icons/" + "greenWaste.svg");
-      }
-      if (serviceName == "Food Waste Collection Service") {
-        return require("~/assets/icons/" + "foodWaste.svg");
+      if (serviceString == "Food Waste Collection Service") {
+        return "is-twitter";
       }
     },
-    binContent(serviceName) {
-      if (serviceName == "Recycling Collection Service") {
-        var array = [
-          "✓ Plastic bottles (e.g. drinks, milk, toiletries, detergent)",
-          "✓ Plastic pots (e.g. yoghurt, cream, snack, soup)",
-          "✓ Plastic trays (e.g. fruit punnets, meat/cake trays)",
-          "✓ Plastic tubs (e.g. ice cream, margarine, sweets tubs)",
-          "✓ Paper and card",
-          "✓ Cartons (Tetra Pak) cartons (e.g. juice, milk, soup cartons)",
-          "✓ Clean foil and foil trays",
-          "✓ Tins and cans (e.g. drink cans, food tins, biscuit or sweet tins - please rinse)",
-          "✓ Empty aerosol cans (e.g. deodorant, air freshener, hairspray, de-icer)",
-          "✓ Shredded paper (must be contained in a small cardboard box or envelope)",
-        ];
-        return array;
+    gotoFullYear() {
+      if (this.selected == null) {
+        this.$buefy.dialog.alert({
+          title: "Oops!",
+          message: "Please enter a postcode and select an address!",
+          confirmText: "Ok!",
+        });
+      } else {
+        //might not need postcode!
+        this.$router.push({
+          path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode,
+        });
       }
-      if (serviceName == "Domestic Waste Collection Service") {
-        var array = [
-          "✓ Non-recyclable rubbish",
-          "✓ Nappies",
-          "✓ Hygiene waste (incontinence articles, catheters etc.)",
-        ];
-        return array;
+    },
+    yearOutput() {
+      console.log("getting year collection data");
+      var today = new Date();
+
+      var todayplusyear = new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      );
+
+      this.collections = [];
+      if (this.selected != null) {
+        this.getCollectionByDate(
+          this.selected.AccountSiteUprn,
+          today,
+          todayplusyear,
+          this.collections
+        ).then(() => {
+          // update other cal
+          this.collectionDisplay = [];
+          this.collections.forEach((item) =>
+            this.collectionDisplay.push({
+              date: this.dateFormatter(item.Date),
+              type: this.getBinColors(item.Service),
+            })
+          );
+        });
+      } else {
+        this.$buefy.dialog.alert({
+          title: "Oops!",
+          message: "Please enter a postcode and select an address!",
+          confirmText: "Ok!",
+        });
       }
-      if (serviceName == "Garden Waste Collection Service") {
-        var array = [
-          "✓ Grass and hedge cuttings",
-          "✓ Leaves, plants and weeds",
-          "✓ Untreated wood and branches up to 100mm thick",
-        ];
-        return array;
+    },
+    dateChange() {
+      this.collections = [];
+      if (this.selected != null) {
+        this.getCollectionByDate(
+          this.selected.AccountSiteUprn,
+          this.dates[0],
+          this.dates[1],
+          this.collections
+        ).then(() => {
+          // update other cal
+          this.collectionDisplay = [];
+          this.collections.forEach((item) =>
+            this.collectionDisplay.push({
+              date: this.dateFormatter(item.Date),
+              type: this.getBinColors(item.Service),
+            })
+          );
+        });
+      } else {
+        this.$buefy.dialog.alert({
+          title: "Oops!",
+          message: "Please enter a postcode and select an address!",
+          confirmText: "Ok!",
+        });
       }
-      if (serviceName == "Food Waste Collection Service") {
-        var array = [
-          "✓ All uneaten food and plate scrapings",
-          "✓ Cheese",
-          "✓ Eggs",
-          "✓ Bread",
-          "✓ Cakes",
-          "✓ Pastries",
-          "✓ Raw meat",
-          "✓ Cooked meat",
-          "✓ Meat bones",
-          "✓ Tea bags",
-          "✓ Coffee grounds",
-          "✓ Raw vegetables",
-          "✓ Cooked vegetables",
-          "✓ Whole fruit",
-          "✓ Fruit and vegatable peelings",
-          "✓ Raw fish",
-];
-        return array;
-      }
+    },
+    dateFormat(date) {
+      if (date.length == 2)
+        return `${date[0].getDate()}/${
+          date[0].getMonth() + 1
+        }/${date[0].getFullYear()} - ${date[1].getDate()}/${
+          date[1].getMonth() + 1
+        }/${date[1].getFullYear()}`;
     },
   },
 };
@@ -762,7 +491,6 @@ export default {
 .box {
   border-radius: 0 !important;
   width: 100%;
-
 }
 .title.is-2 {
   font-size: 1.5rem;
@@ -787,5 +515,4 @@ p {
     width: 100%;
   }
 }
-
 </style>

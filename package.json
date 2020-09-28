@@ -14,9 +14,11 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/dotenv": "^1.4.0",
     "buefy": "^0.8.20",
+    "defer": "^1.0.0",
     "node-sass": "^4.14.1",
     "nuxt": "^2.0.0",
     "nuxt-buefy": "^0.3.31",
+    "promise-defer": "^1.0.0",
     "sass-loader": "^8.0.2",
     "vue-browser-geolocation": "^1.8.0"
   },
