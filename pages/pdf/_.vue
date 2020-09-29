@@ -1,11 +1,12 @@
 <template>
   <div class="container">
-    <div class="binform">
+    <div class="binform" id="pdf">
       <div style="display:inline">
         <b-button>
           <nuxt-link to="/" style="color:white">Go home</nuxt-link>
         </b-button>
-        <p>{{path}}</p>
+        <b-button style="color:white" @click="pdfgencss()">Download PDF</b-button>
+        <!-- <p>{{path}}</p> -->
       </div>
 
       <div v-for="c in collections" :key="c.id">
@@ -19,6 +20,8 @@
 import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
+import * as jsPDF from "jspdf";
+
 // yarn add promise-defer
 export default {
   data() {
@@ -28,6 +31,17 @@ export default {
       postcode: "",
       collections: [],
       collectionDisplay: [],
+      "a4-landscape": {
+        orientation: "landscape",
+        unit: "cm",
+        format: "a4",
+        maxWidth: 23,
+        maxHeight: 18,
+        left: 1.5,
+        top: 3,
+        space: 0.5,
+        lineHeight: 0.5,
+      },
     };
   },
   mounted() {
@@ -37,6 +51,23 @@ export default {
     this.yearOutput();
   },
   methods: {
+    pdfgencss() {
+      console.log("test pdf output with css");
+      if (process.browser) {
+        window.print();
+
+        // const filename = this.uprn + ".pdf";
+        // // const jsPDF = require("jspdf");
+        // // let doc = new jsPDF("p", "cm", "a4");
+        // const html2canvas = require("html2canvas");
+        // var canvasElement = document.createElement("canvas");
+        // html2canvas(document.querySelector("#pdf")).then((canvas) => {
+        //   let pdf = new jsPDF("p", "mm", "a4");
+        //   pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 211, 298);
+        //   pdf.save(filename);
+        // });
+      }
+    },
     yearOutput() {
       var today = new Date();
 
@@ -146,4 +177,13 @@ export default {
 </script>
 
 <style>
+* {
+  -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
+  color-adjust: exact !important; /*Firefox*/
+}
+@page {
+  size: auto; /* auto is the initial value */
+  margin-top: 0mm; /* this affects the margin in the printer settings */
+  margin-bottom: 0mm; /* this affects the margin in the printer settings */
+}
 </style>

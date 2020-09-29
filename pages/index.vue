@@ -1,47 +1,48 @@
 <template>
-  <div class="container">
-    <div class="binform">
-      <h1 class="subtitle">Bin test calendar</h1>
-      <h1 class="subtitle">rg304tr</h1>
-      <b-field class="mainsearch">
-        <b-autocomplete
-          class="searchbox"
-          size="is-large"
-          v-model="name"
-          ref="autocomplete"
-          :data="data"
-          :loading="isFetching"
-          :open-on-focus="true"
-          :clear-on-select="false"
-          placeholder="Enter postcode"
-          @typing="getAsyncData"
-          @select="selectAddress"
-        >
-          <template slot-scope="props">
-            <div class="media">
-              <div class="media-content search-result">{{props.option.SiteShortAddress}}</div>
-            </div>
-          </template>
+  <no-ssr>
+    <div class="container" id="container">
+      <div class="binform" id="binform">
+        <h1 class="subtitle">Bin test calendar</h1>
+        <h1 class="subtitle">rg304tr</h1>
+        <b-field class="mainsearch">
+          <b-autocomplete
+            class="searchbox"
+            size="is-large"
+            v-model="name"
+            ref="autocomplete"
+            :data="data"
+            :loading="isFetching"
+            :open-on-focus="true"
+            :clear-on-select="false"
+            placeholder="Enter postcode"
+            @typing="getAsyncData"
+            @select="selectAddress"
+          >
+            <template slot-scope="props">
+              <div class="media">
+                <div class="media-content search-result">{{props.option.SiteShortAddress}}</div>
+              </div>
+            </template>
 
-          <template slot="empty">No results for {{name}}</template>
-          <template slot="footer">
-            <a @click="addressFindError">
-              <span>Can't find address?</span>
-            </a>
-          </template>
-        </b-autocomplete>
-        <b-button
-          @click.stop="$refs.autocomplete.focus()"
-          size="is-large"
-          type="is-primary"
-          style="width:10%"
-        >
-          <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
-        </b-button>
-      </b-field>
-      <div class="slide-container">
-        <b-field>
-          <!-- <div class="slide-controls">
+            <template slot="empty">No results for {{name}}</template>
+            <template slot="footer">
+              <a @click="addressFindError">
+                <span>Can't find address?</span>
+              </a>
+            </template>
+          </b-autocomplete>
+          <b-button
+            @click.stop="$refs.autocomplete.focus()"
+            size="is-large"
+            type="is-primary"
+            style="width:10%"
+          >
+            <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
+          </b-button>
+        </b-field>
+        <div class="slide-container">
+          <b-field>
+            <!-- <div class="slide-controls">
             <b-switch v-model="byCalendar" @input="switchCheck(byCalendar, byDateRange)">By calendar</b-switch>
           </div>
           <div class="slide-controls">
@@ -49,70 +50,73 @@
               v-model="byDateRange"
               @input="switchCheck(byCalendar, byDateRange)"
             >By date range</b-switch>
-          </div>-->
-          <div class="slide-controls">
-            <b-button style="color:white" @click="gotoFullYear()">Get full year</b-button>
-            <!-- <b-switch v-model="getYear" @input="yearOutput()">Get year data</b-switch> -->
-          </div>
-        </b-field>
-      </div>
-
-      <div v-if="byCalendar" style="display: inline-block;">
-        <br />
-        <b-datepicker inline v-model="date" :events="collectionDisplay" indicators="bars"></b-datepicker>
-        <br />
-      </div>
-
-      <div v-if="byDateRange" style="display: inline-block;">
-        <b-field label="Select a date">
-          <b-datepicker
-            ref="datepicker"
-            placeholder
-            :mobile-native="false"
-            :events="collectionDisplay"
-            :date-formatter="dateFormat"
-            v-model="dates"
-            @input="dateChange()"
-            range
-          ></b-datepicker>
-        </b-field>
-        <br />
-      </div>
-      <!-- data -->
-      <!-- <div v-if="selected">{{selected}}</div>
-      <br />
-      <div v-if="collections.length">{{collections}}</div>-->
-
-      <div v-if="collectionsError">
-        <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
-      </div>
-      <!-- output year collection to test -->
-      <div v-if="getYear">
-        <div v-for="c in collections" :key="c.id">
-          <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
+            </div>-->
+            <div class="slide-controls">
+              <b-button style="color:white" @click="gotoFullYear()">Get full year</b-button>
+              <b-button style="color:white" @click="pdfgencss()">Download PDF</b-button>
+              <!-- <b-switch v-model="getYear" @input="yearOutput()">Get year data</b-switch> -->
+            </div>
+          </b-field>
         </div>
-      </div>
-      <div v-if="collections.length && !getYear">
-        <div v-for="c in collections" :key="c.id">
-          <div class="tile is-ancestor">
-            <div class="tile is-vertical is-parent">
-              <div class="tile is-child box">
-                <p class="title is-2">{{c.Service}}</p>
-                <!-- <p>{{c.Day}}</p> -->
-                <p>{{formatDate(c.Date)}}</p>
+
+        <div v-if="byCalendar" style="display: inline-block;">
+          <br />
+          <b-datepicker inline v-model="date" :events="collectionDisplay" indicators="bars"></b-datepicker>
+          <br />
+        </div>
+
+        <div v-if="byDateRange" style="display: inline-block;">
+          <b-field label="Select a date">
+            <b-datepicker
+              ref="datepicker"
+              placeholder
+              :mobile-native="false"
+              :events="collectionDisplay"
+              :date-formatter="dateFormat"
+              v-model="dates"
+              @input="dateChange()"
+              range
+            ></b-datepicker>
+          </b-field>
+          <br />
+        </div>
+        <!-- data -->
+        <!-- <div v-if="selected">{{selected}}</div>
+      <br />
+        <div v-if="collections.length">{{collections}}</div>-->
+
+        <div v-if="collectionsError">
+          <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
+        </div>
+        <!-- output year collection to test -->
+        <div v-if="getYear">
+          <div v-for="c in collections" :key="c.id">
+            <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
+          </div>
+        </div>
+        <div v-if="collections.length && !getYear">
+          <div v-for="c in collections" :key="c.id">
+            <div class="tile is-ancestor">
+              <div class="tile is-vertical is-parent">
+                <div class="tile is-child box">
+                  <p class="title is-2">{{c.Service}}</p>
+                  <!-- <p>{{c.Day}}</p> -->
+                  <p>{{formatDate(c.Date)}}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </no-ssr>
 </template>
 
 <script>
 import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
+import jsPDF from "jspdf";
 
 export default {
   data() {
@@ -140,6 +144,27 @@ export default {
     };
   },
   methods: {
+    pdfgencss() {
+      console.log("test pdf output with css");
+      if (process.browser) {
+        window.print()
+        // const filename = "ThisIsYourPDFFilename.pdf";
+        // // const jsPDF = require("jspdf");
+        // // let doc = new jsPDF("landscape", "cm", "a4");
+        // const html2canvas = require("html2canvas");
+
+        // var canvasElement = document.createElement("canvas");
+        // html2canvas(document.querySelector("#binform"), {
+        //   scale: '1',
+        //   width: 2000,
+        //   height: 2000,
+        // }).then((canvas) => {
+        //   let pdf = new jsPDF("p", "mm", "a4");
+        //   pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
+        //   pdf.save(filename);
+        // });
+      }
+    },
     switchCheck(cal, date) {
       if (cal == false && date == true) {
         this.previosSwitch = "byDateRange";
@@ -429,6 +454,16 @@ export default {
 </script>
 
 <style>
+*{
+  -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
+  color-adjust: exact !important;  /*Firefox*/
+}
+@page{
+  size: auto A4 landscape;
+  margin: 3mm;
+  -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
+  color-adjust: exact !important;  /*Firefox*/
+}
 .card {
   margin-top: 100px !important;
 }
@@ -440,7 +475,7 @@ export default {
 }
 .searchbox {
   display: inline-block;
-  width: 100%;
+  width: 50%;
 }
 
 .mainsearch {
