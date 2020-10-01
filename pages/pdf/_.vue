@@ -77,6 +77,7 @@ import defer from "promise-defer";
 export default {
   data() {
     return {
+      loadingComponent:null,
       isLoading: true,
       isFullPage: true,
       monthNames: [
@@ -522,10 +523,11 @@ export default {
     };
   },
   mounted() {
+    this.loadingComponent = this.$buefy.loading.open();
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
-    // this.yearOutput();
+    this.yearOutput();
   },
 
   methods: {
@@ -536,9 +538,6 @@ export default {
       }
     },
     yearOutput() {
-      // const loadingComponent = this.$buefy.loading.open({
-      //   // container: this.$refs.element
-      // });
       var today = new Date();
 
       var todayplusyear = new Date(
@@ -562,7 +561,7 @@ export default {
               type: this.getBinColors(item.Service),
             });
           });
-          loadingComponent.close();
+          this.loadingComponent.close();
         });
       } else {
         this.$buefy.dialog.alert({
@@ -689,7 +688,7 @@ export default {
 .binform-pdf {
   display: flex;
   flex-direction: column;
-  background-color: lightgray;
+  background-color: #f2f2f2;
   width: 210mm;
   height: 287mm;
 }
