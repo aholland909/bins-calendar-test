@@ -1,0 +1,53 @@
+// Import Bulma's core
+@import "~bulma/sass/utilities/_all";
+
+// Set your colors
+$primary: #8c67ef;
+$primary-invert: findColorInvert($primary);
+$twitter: #4099FF;
+$twitter-invert: findColorInvert($twitter);
+$transparent: rgba(0, 0, 0, 0);
+//bin colors 
+$recycling: #800000;
+$recycling-invert: findColorInvert($recycling);
+$rubbish: #808080;
+$rubbish-invert: findColorInvert($rubbish);
+$garden-waste: #228B22;
+$garden-waste-invert: findColorInvert($garden-waste);
+//$food-waste:;
+
+$colors: (
+    "white": ($white, $black),
+    "black": ($black, $white),
+    "light": ($light, $light-invert),
+    "dark": ($dark, $dark-invert),
+    "primary": ($primary, $primary-invert),
+    "info": ($info, $info-invert),
+    "success": ($success, $success-invert),
+    "warning": ($warning, $warning-invert),
+    "danger": ($danger, $danger-invert),
+    "twitter": ($twitter, $twitter-invert),
+    "recycling":($recycling, $recycling-invert),
+    "rubbish":($rubbish, $rubbish-invert),
+    "garden":($garden-waste, $garden-waste-invert),
+    
+);
+
+// Links
+$link: $primary;
+$link-invert: $primary-invert;
+$link-focus-border: $primary;
+
+//variables for datepicker
+$datepicker-item-selected-color: black;
+$datepicker-item-selected-background-color: $transparent;
+$datepicker-today-border: $transparent;
+
+//loading variables
+$loading-background: black;
+
+$size-7: 0.2rem;
+
+// Import Bulma and Buefy styles
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
