@@ -688,7 +688,7 @@ export default {
 .binform-pdf {
   display: flex;
   flex-direction: column;
-  background-color: #f2f2f2;
+  background-color: white;
   width: 210mm;
   height: 287mm;
 }
@@ -723,7 +723,7 @@ export default {
 }
 @page {
   size: auto; /* auto is the initial value */
-  margin-top: 0mm; /* this affects the margin in the printer settings */
-  margin-bottom: 0mm; /* this affects the margin in the printer settings */
+  /* margin-top: 0mm; //this affects the margin in the printer settings */
+  /* margin-bottom: 0mm; //this affects the margin in the printer settings */
 }
 </style>
