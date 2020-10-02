@@ -2,9 +2,7 @@
   <div v-if="!isLoading" class="container">
     <div class="binform-pdf" id="pdf">
       <div class="binform-pdf-key">
-        <div class="key-icons">
-          Key:
-        </div>
+        <div class="key-icons">Key:</div>
         <div class="key-icons">
           Food waste
           <b-icon
@@ -77,7 +75,7 @@ import defer from "promise-defer";
 export default {
   data() {
     return {
-      loadingComponent:null,
+      loadingComponent: null,
       isLoading: true,
       isFullPage: true,
       monthNames: [
@@ -142,6 +140,11 @@ export default {
           });
           this.isLoading = false;
           this.loadingComponent.close();
+          setTimeout(() => {
+            if(process.browser){
+            window.print()
+          }
+          }, 1000);
         });
       } else {
         this.$buefy.dialog.alert({
@@ -303,7 +306,8 @@ export default {
 }
 @page {
   size: auto; /* auto is the initial value */
-  /* margin-top: 0mm; //this affects the margin in the printer settings */
-  /* margin-bottom: 0mm; //this affects the margin in the printer settings */
+  /* this affects the margin in the printer settings */
+  margin-top: 1mm; 
+  margin-bottom: 0mm;
 }
 </style>
