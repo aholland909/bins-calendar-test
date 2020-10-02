@@ -51,6 +51,7 @@
             size="is-size-7"
             :mobile-native="false"
             :events="collectionDisplay"
+            indicators="bars"
           >
             <template slot="header">
               <span class>{{ monthNames[(new Date().getMonth() + n-1) % 12] }}</span>
@@ -300,6 +301,24 @@ export default {
 .datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell {
   padding: 0.3rem 0.5rem 0.6rem;
 }
+/* full height box */
+.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell.has-event.bars .event {
+    height: 1.75em;
+    width: 100%;
+} 
+
+.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell.has-event {
+  color: white;
+}
+span {
+    font-style: inherit;
+    font-weight: inherit;
+    z-index: 999;
+    position: relative;
+}
+
+
+
 * {
   -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
   color-adjust: exact !important; /*Firefox*/
