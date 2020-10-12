@@ -2,7 +2,7 @@
   <div class="container" id="container">
     <div class="binform" id="binform">
       <h1 class="subtitle">Bin test calendar pdf test</h1>
-      <b-field class="mainsearch">
+      <b-field class="mainsearch" type="is-black">
         <b-autocomplete
           class="searchbox"
           size="is-large"
@@ -12,28 +12,32 @@
           :loading="isFetching"
           :open-on-focus="true"
           :clear-on-select="false"
-          placeholder="Enter postcode"
+          placeholder="e.g. RG1 2LU"
           @typing="getAsyncData"
           @select="selectAddress"
         >
           <template slot-scope="props">
             <div class="media">
-              <div class="media-content search-result">{{props.option.SiteShortAddress}}</div>
+              <div class="media-content search-result">
+                <p>{{props.option.SiteShortAddress}}</p>
+              </div>
             </div>
           </template>
 
           <template slot="empty">No results for {{name}}</template>
           <template slot="footer">
-            <a @click="addressFindError">
-              <span>Can't find address?</span>
-            </a>
+            <p>
+              <a @click="addressFindError" style="color:black">
+                <span>Your address not found?</span>
+              </a>
+            </p>
           </template>
         </b-autocomplete>
         <b-button
           @click.stop="$refs.autocomplete.focus()"
           size="is-large"
           type="is-primary"
-          style="width:10%"
+          style="width:5%"
         >
           <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
         </b-button>
@@ -48,51 +52,43 @@
         </b-field>
       </div>
 
-      <div v-if="byCalendar" style="display: inline-block;">
-        <br />
-        <b-datepicker inline v-model="date" :events="collectionDisplay" indicators="bars"></b-datepicker>
-        <br />
-      </div>
-
-      <div v-if="byDateRange" style="display: inline-block;">
-        <b-field label="Select a date">
-          <b-datepicker
-            ref="datepicker"
-            placeholder
-            :mobile-native="false"
-            :events="collectionDisplay"
-            :date-formatter="dateFormat"
-            v-model="dates"
-            @input="dateChange()"
-            range
-          ></b-datepicker>
-        </b-field>
-        <br />
-      </div>
-      <!-- data -->
-      <!-- <div v-if="selected">{{selected}}</div>
-      <br />
-      <div v-if="collections.length">{{collections}}</div>-->
-
-      <div v-if="collectionsError">
-        <strong>No Kerbside collection for {{selected.SiteShortAddress}}</strong>
+      <div v-if="collectionsError" class="tile is-child box">
+        <p>No kerbside collection for {{selected.SiteShortAddress}}.</p>
+        <p>If this property is a flat there will be an alternative collection arrangement.</p>
       </div>
       <!-- output year collection to test -->
-      <div v-if="getYear">
-        <div v-for="c in collections" :key="c.id">
-          <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
-        </div>
-      </div>
-      <div v-if="collections.length && !getYear">
-        <div v-for="c in collections" :key="c.id">
-          <div class="tile is-ancestor">
-            <div class="tile is-vertical is-parent">
-              <div class="tile is-child box">
-                <p class="title is-2">{{c.Service}}</p>
-                <!-- <p>{{c.Day}}</p> -->
-                <p>{{formatDate(c.Date)}}</p>
-              </div>
+      <div class="tile is-ancestor">
+        <div v-if="collections.length" class="tile is-vertical is-parent">
+          <div class="tile is-child box">
+            <p class="title is-2">Address: {{selected.SiteShortAddress}}</p>
+          </div>
+          <div v-for="c in collections" :key="c.id" class="tile is-child box">
+            <p class="title is-2">{{changeServiceName(c.Service)}}</p>
+            <!-- <p>{{c.Day}}</p> -->
+            <p>{{getDay(c.Date)}} - {{formatDate(c.Date)}}</p>
+            <div class="bin-image" id="icon">
+              <img class="image is-64x64" :src="getImage(c.Service)" fill="white" />
             </div>
+
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" :open="false">
+              <div
+                slot="trigger"
+                slot-scope="props"
+                class="card-header"
+                role="button"
+                aria-controls="contentIdForA11y3"
+              >
+                <p class="card-header-title" style="font-weight:300">What can I put in this bin?</p>
+                <a class="card-header-icon">
+                  <b-icon type="is-black" :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+                </a>
+              </div>
+              <div class="card-content">
+                <div class="content" v-for="i in binContent(c.Service)" :key="i.id">
+                  <p>{{i}}</p>
+                </div>
+              </div>
+            </b-collapse>
           </div>
         </div>
       </div>
@@ -138,23 +134,19 @@ export default {
         window.print();
       }
     },
-    switchCheck(cal, date) {
-      if (cal == false && date == true) {
-        this.previosSwitch = "byDateRange";
-      }
-      if (cal == true && date == false) {
-        this.previosSwitch = "byCalendar";
-      }
-      if (cal == true && date == true) {
-        if (this.previosSwitch == "byDateRange") {
-          this.byDateRange = false;
-          this.previosSwitch = true;
-          this.previosSwitch = "byCalendar";
-        } else if (this.previosSwitch == "byCalendar") {
-          this.byDateRange = true;
-          this.byCalendar = false;
-          this.previosSwitch = "byDateRange";
-        }
+    gotoFullYear() {
+      if (this.selected == null) {
+        this.$buefy.dialog.alert({
+          title: "Oops!",
+          message: "Please enter a postcode and select an address!",
+          confirmText: "Ok!",
+        });
+      } else {
+        //might not need postcode!
+        var calendaraddress = this.selected.SiteShortAddress.replaceAll(",", "")
+        this.$router.push({
+          path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode + "/" + calendaraddress,
+        });
       }
     },
     getAsyncData: debounce(function (name) {
@@ -165,12 +157,11 @@ export default {
       if (this.valid_postcode(name)) {
         this.isFetching = true;
         axios
-          .get("https://api.reading.gov.uk/" + "rbc/getaddresses/" + name)
+          .get("https://api.reading.gov.uk/rbc/getaddresses/" + name)
           .then(({ data }) => {
             this.data = [];
             if (data.Addresses != null) {
               data.Addresses.forEach((item) => this.data.push(item));
-
               //sort addresses
               this.data = this.data.sort(this.compareAddress);
             }
@@ -186,13 +177,11 @@ export default {
         this.data = [];
       }
     }, 500),
-
     valid_postcode(postcode) {
       postcode = postcode.replace(/\s/g, "");
       var regex = /^[A-Z]{1,2}[0-9]{1,2} ?[0-9][A-Z]{2}$/i;
       return regex.test(postcode);
     },
-
     compareAddress(a, b) {
       // check for numberhood
       a = a.SiteShortAddress.split(",")[0];
@@ -211,40 +200,24 @@ export default {
         return a.localeCompare(b);
       }
       if (wordA || wordB) return (wordA && -1) || 1;
-
       return 1; //or whatever logic to sort within non-alphanumeric values
     },
-
     selectAddress(selected) {
+      this.collections = [];
       this.isFetching = true;
-      this.postcode = this.name;
       this.selected = selected;
       axios
         .get(
-          "https://api.reading.gov.uk/" +
-            "rbc/mycollections/" +
+          "https://api.reading.gov.uk/rbc/mycollections/" +
             this.selected.AccountSiteUprn
         )
         .then(({ data }) => {
           this.collections = [];
-          this.collectionDisplay = [];
           if (data.Error == "No results returned") {
             this.collectionsError = true;
           } else {
             data.Collections.forEach((item) => this.collections.push(item));
             this.collectionsError = false;
-
-            data.Collections.forEach((item) =>
-              this.collectionDisplay.push({
-                date: this.dateFormatter(item.Date),
-                type: this.getBinColors(item.Service),
-              })
-            );
-            //first date and end date of datepicker
-            this.dates.push(new Date());
-            this.dates.push(
-              this.collectionDisplay[this.collectionDisplay.length - 1].date
-            );
           }
         })
         .catch((error) => {
@@ -254,53 +227,6 @@ export default {
         .finally(() => {
           this.isFetching = false;
         });
-    },
-    getCollectionByDate(uprn, startDate, endDate, collectionsArray) {
-      var deferred = defer();
-      var formattedstartDate =
-        new Date(startDate).getFullYear() +
-        "-" +
-        (new Date(startDate).getMonth() + 1) +
-        "-" +
-        new Date(startDate).getDate();
-      console.log("formatted data " + formattedstartDate);
-      axios
-        .get(
-          "https://api.reading.gov.uk/" +
-            "rbc/mycollections/" +
-            uprn +
-            "/" +
-            formattedstartDate
-        )
-        .then((response) => {
-          // handle success
-          if (response.data.Collections) {
-            if (new Date(startDate) < new Date(endDate)) {
-              response.data.Collections.forEach((item) =>
-                collectionsArray.push(item)
-              );
-              startDate = this.dateFormatter(
-                collectionsArray[collectionsArray.length - 1].Date
-              );
-              this.getCollectionByDate(
-                uprn,
-                startDate,
-                endDate,
-                collectionsArray
-              ).then(function () {
-                deferred.resolve();
-              });
-            } else {
-              deferred.resolve();
-            }
-          }
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        });
-
-      return deferred.promise;
     },
     formatDate(date) {
       // var d = new Date(date);
@@ -320,124 +246,97 @@ export default {
       );
       return dateObject;
     },
+    getDay(date) {
+      var days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      var d = this.dateFormatter(date);
+      return days[d.getDay()];
+    },
     addressFindError() {
       this.$buefy.dialog.alert({
-        title: "Can't find address?",
-        message: "Are you sure it's a Reading postcode?",
-        confirmText: "Ok!",
+        title: "Shucks! We may not be your council :-(",
+        message:
+          'Check who your local authority is <a href="https://www.gov.uk/find-local-council">here</a>',
+        confirmText: "Close",
       });
     },
-    getBinColors(serviceString) {
-      if (serviceString == "Recycling Collection Service") {
-        return "is-recycling";
+    changeServiceName(serviceName) {
+      if (serviceName == "Recycling Collection Service") {
+        return "Recycling (red bin)";
       }
-      if (serviceString == "Domestic Waste Collection Service") {
-        return "is-rubbish";
+      if (serviceName == "Domestic Waste Collection Service") {
+        return "Rubbish (grey bin)";
       }
-      if (serviceString == "Garden Waste Collection Service") {
-        return "is-garden";
+      if (serviceName == "Garden Waste Collection Service") {
+        return "Garden (green bin)";
       }
-      if (serviceString == "Food Waste Collection Service") {
-        return "is-twitter";
-      }
-    },
-    gotoFullYear() {
-      if (this.selected == null) {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
-      } else {
-        //might not need postcode!
-        var calendaraddress = this.selected.SiteShortAddress.replaceAll(",", "")
-        this.$router.push({
-          path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode + "/" + calendaraddress,
-        });
+      if (serviceName == "Food Waste Collection Service") {
+        return "Food";
       }
     },
-    yearOutput() {
-      console.log("getting year collection data");
-      var today = new Date();
-
-      var todayplusyear = new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1)
-      );
-
-      this.collections = [];
-      if (this.selected != null) {
-        this.getCollectionByDate(
-          this.selected.AccountSiteUprn,
-          today,
-          todayplusyear,
-          this.collections
-        ).then(() => {
-          // update other cal
-          this.collectionDisplay = [];
-          this.collections.forEach((item) =>
-            this.collectionDisplay.push({
-              date: this.dateFormatter(item.Date),
-              type: this.getBinColors(item.Service),
-            })
-          );
-        });
-      } else {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
+    getImage(serviceName) {
+      if (serviceName == "Recycling Collection Service") {
+        return require("~/assets/icons/" + "redWaste.svg");
+      }
+      if (serviceName == "Domestic Waste Collection Service") {
+        return require("~/assets/icons/" + "greyWaste.svg");
+      }
+      if (serviceName == "Garden Waste Collection Service") {
+        return require("~/assets/icons/" + "greenWaste.svg");
+      }
+      if (serviceName == "Food Waste Collection Service") {
+        return require("~/assets/icons/" + "foodWaste.svg");
       }
     },
-    dateChange() {
-      this.collections = [];
-      if (this.selected != null) {
-        this.getCollectionByDate(
-          this.selected.AccountSiteUprn,
-          this.dates[0],
-          this.dates[1],
-          this.collections
-        ).then(() => {
-          // update other cal
-          this.collectionDisplay = [];
-          this.collections.forEach((item) =>
-            this.collectionDisplay.push({
-              date: this.dateFormatter(item.Date),
-              type: this.getBinColors(item.Service),
-            })
-          );
-        });
-      } else {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
+    binContent(serviceName) {
+      if (serviceName == "Recycling Collection Service") {
+        var array = [
+          "✓ Plastic bottles (e.g. drinks, milk, toiletries, detergent)",
+          "✓ Plastic pots (e.g. yoghurt, cream, snack, soup)",
+          "✓ Plastic trays (e.g. fruit punnets, meat/cake trays)",
+          "✓ Plastic tubs (e.g. ice cream, margarine, sweets tubs)",
+          "✓ Paper and card",
+          "✓ Cartons (Tetra Pak) cartons (e.g. juice, milk, soup cartons)",
+          "✓ Clean foil and foil trays",
+          "✓ Tins and cans (e.g. drink cans, food tins, biscuit or sweet tins - please rinse)",
+          "✓ Empty aerosol cans (e.g. deodorant, air freshener, hairspray, de-icer)",
+          "✓ Shredded paper (must be contained in a small cardboard box or envelope)",
+        ];
+        return array;
       }
-    },
-    dateFormat(date) {
-      if (date.length == 2)
-        return `${date[0].getDate()}/${
-          date[0].getMonth() + 1
-        }/${date[0].getFullYear()} - ${date[1].getDate()}/${
-          date[1].getMonth() + 1
-        }/${date[1].getFullYear()}`;
+      if (serviceName == "Domestic Waste Collection Service") {
+        var array = [
+          "✓ Non-recyclable rubbish",
+          "✓ Nappies",
+          "✓ Hygiene waste (incontinence articles, catheters etc.)",
+        ];
+        return array;
+      }
+      if (serviceName == "Garden Waste Collection Service") {
+        var array = [
+          "✓ Grass and hedge cuttings",
+          "✓ Leaves, plants and weeds",
+          "✓ Untreated wood and branches up to 100mm thick",
+        ];
+        return array;
+      }
+      if (serviceName == "Food Waste Collection Service") {
+        var array = ["✓ All uneaten food and plate scrapings"];
+        return array;
+      }
     },
   },
 };
 </script>
 
-<style>
-* {
-  -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
-  color-adjust: exact !important; /*Firefox*/
-}
-@page {
-  size: auto A4 landscape;
-  margin: 3mm;
-  -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
-  color-adjust: exact !important; /*Firefox*/
-}
+<style scoped>
 .card {
   margin-top: 100px !important;
 }
@@ -449,14 +348,12 @@ export default {
 }
 .searchbox {
   display: inline-block;
-  width: 50%;
+  width: 100%;
 }
-
 .mainsearch {
   display: flex !important;
   justify-content: left !important;
 }
-
 .binform {
   padding-top: 2rem;
   margin-left: 5px;
@@ -471,7 +368,6 @@ export default {
   align-items: flex-start;
   text-align: left;
 }
-
 .title {
   font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -481,7 +377,6 @@ export default {
   color: #000000;
   letter-spacing: 1px;
 }
-
 .subtitle {
   font-weight: 300;
   font-size: 42px;
@@ -489,7 +384,6 @@ export default {
   word-spacing: 5px;
   padding-bottom: 15px;
 }
-
 .links {
   padding-top: 15px;
 }
@@ -515,7 +409,6 @@ p {
   background-color: black !important;
   border-radius: 0%;
 }
-
 .input-shadow {
   color: black !important;
 }
