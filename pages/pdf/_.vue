@@ -1,43 +1,32 @@
 <template>
   <div v-if="!isLoading" class="container">
     <div class="binform-pdf" id="pdf">
+      <div class="binform-header">
+        <div>
+          <img class="binform-header-logo" src="~assets/images/RBC.png" alt="RBC Home" />
+        </div>
+        <div v-if="this.address" class="binform-address">
+          <h1 class="title is-4" style="margin:0px">Collections for:</h1>
+          <h2 class="title is-6">{{this.address.replace("%", " ")}}</h2>
+        </div>
+      </div>
       <div class="binform-pdf-key">
         <div class="key-icons">Key:</div>
         <div class="key-icons">
           Food waste
-          <b-icon
-            icon="checkbox-blank-circle"
-            size="is-small"
-            class="material-icons"
-            type="is-twitter"
-          ></b-icon>
+          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-twitter"></b-icon>
         </div>
         <div class="key-icons">
           Recycling
-          <b-icon
-            icon="checkbox-blank-circle"
-            size="is-small"
-            class="material-icons"
-            type="is-recycling"
-          ></b-icon>
+          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-recycling"></b-icon>
         </div>
         <div class="key-icons">
           Rubbish
-          <b-icon
-            icon="checkbox-blank-circle"
-            size="is-small"
-            class="material-icons"
-            type="is-rubbish"
-          ></b-icon>
+          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-rubbish"></b-icon>
         </div>
         <div class="key-icons">
           Garden
-          <b-icon
-            icon="checkbox-blank-circle"
-            size="is-small"
-            class="material-icons"
-            type="is-garden"
-          ></b-icon>
+          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-garden"></b-icon>
         </div>
         <!-- <p>{{path}}</p> -->
         <!-- new Date().setFullYear(new Date().getFullYear() + 1) -->
@@ -54,7 +43,7 @@
             indicators="bars"
           >
             <template slot="header">
-              <span class>{{ monthNames[(new Date().getMonth() + n-1) % 12] }}</span>
+              <span class>{{ formatTitle(n) }}</span>
             </template>
           </b-datepicker>
         </div>
@@ -96,6 +85,7 @@ export default {
       path: this.$route.params.pathMatch,
       uprn: "",
       postcode: "",
+      address:"",
       collections: [],
       collectionDisplay: [],
     };
@@ -105,10 +95,16 @@ export default {
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
+    this.address = pathArray[2]
     this.yearOutput();
   },
 
   methods: {
+    formatTitle(m) {
+      var cal = new Date();
+      cal.setMonth(cal.getMonth() + m - 1);
+      return this.monthNames[cal.getMonth()] + " " + cal.getFullYear();
+    },
     pdfgencss() {
       console.log("test pdf output with css");
       if (process.browser) {
@@ -142,9 +138,9 @@ export default {
           this.isLoading = false;
           this.loadingComponent.close();
           setTimeout(() => {
-            if(process.browser){
-            window.print()
-          }
+            if (process.browser) {
+              window.print();
+            }
           }, 1000);
         });
       } else {
@@ -249,6 +245,20 @@ export default {
 </script>
 
 <style>
+.binform-header-logo{
+  height: 100px;
+}
+.binform-address{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.binform-header{
+  display: flex;
+  justify-content: space-between;
+  margin-left: 20px;
+  margin-right: 20px;
+}
 .key-icons {
   padding-right: 20px;
 }
@@ -302,22 +312,27 @@ export default {
   padding: 0.3rem 0.5rem 0.6rem;
 }
 /* full height box */
-.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell.has-event.bars .event {
-    height: 1.75em;
-    width: 100%;
-} 
+.datepicker
+  .datepicker-table
+  .datepicker-body.has-events
+  .datepicker-cell.has-event.bars
+  .event {
+  height: 1.75em;
+  width: 100%;
+}
 
-.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell.has-event {
+.datepicker
+  .datepicker-table
+  .datepicker-body.has-events
+  .datepicker-cell.has-event {
   color: white;
 }
 span {
-    font-style: inherit;
-    font-weight: inherit;
-    z-index: 999;
-    position: relative;
+  font-style: inherit;
+  font-weight: inherit;
+  z-index: 999;
+  position: relative;
 }
-
-
 
 * {
   -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
@@ -326,7 +341,7 @@ span {
 @page {
   size: auto; /* auto is the initial value */
   /* this affects the margin in the printer settings */
-  margin-top: 1mm; 
+  margin-top: 1mm;
   margin-bottom: 0mm;
 }
 </style>

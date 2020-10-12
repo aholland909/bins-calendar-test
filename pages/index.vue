@@ -350,8 +350,9 @@ export default {
         });
       } else {
         //might not need postcode!
+        var calendaraddress = this.selected.SiteShortAddress.replaceAll(",", "")
         this.$router.push({
-          path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode,
+          path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode + "/" + calendaraddress,
         });
       }
     },
