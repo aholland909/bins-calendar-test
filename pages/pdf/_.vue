@@ -48,6 +48,9 @@
           </b-datepicker>
         </div>
       </div>
+      <div class="binform-footer">
+        <h1 class="title is-6" style="margin:0px">Dates subject to change</h1>
+      </div>
       <!-- <div v-for="c in collections" :key="c.id">
         <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
       </div>-->
@@ -91,7 +94,7 @@ export default {
     };
   },
   mounted() {
-    this.loadingComponent = this.$buefy.loading.open();
+    // this.loadingComponent = this.$buefy.loading.open();
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
@@ -245,6 +248,12 @@ export default {
 </script>
 
 <style>
+.binform-footer{
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .binform-header-logo{
   height: 100px;
 }
