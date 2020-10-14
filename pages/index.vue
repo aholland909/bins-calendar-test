@@ -1,15 +1,8 @@
 <template>
-<<<<<<< HEAD
   <div class="container" id="nodeToRenderAsPDF">
     <div class="binform">
       <h1 class="subtitle">When is my bin collected?</h1>
       <b-field class="mainsearch">
-=======
-  <div class="container" id="container">
-    <div class="binform" id="binform">
-      <h1 class="subtitle">Bin test calendar pdf test</h1>
-      <b-field class="mainsearch" type="is-black">
->>>>>>> pdftest
         <b-autocomplete
           class="searchbox"
           size="is-large"
