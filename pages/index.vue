@@ -143,7 +143,7 @@ export default {
         });
       } else {
         //might not need postcode!
-        var calendaraddress = this.selected.SiteShortAddress.replaceAll(",", "")
+        var calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "")
         this.$router.push({
           path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode + "/" + calendaraddress,
         });

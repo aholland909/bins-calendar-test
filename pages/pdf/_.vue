@@ -94,7 +94,7 @@ export default {
     };
   },
   mounted() {
-    // this.loadingComponent = this.$buefy.loading.open();
+    this.loadingComponent = this.$buefy.loading.open();
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
@@ -144,7 +144,7 @@ export default {
             if (process.browser) {
               window.print();
             }
-          }, 1000);
+          }, 2000);
         });
       } else {
         this.$buefy.dialog.alert({
