@@ -1,5 +1,34 @@
 <template>
-  <div class="container">
+  <div class="container" id="nodeToRenderAsPDF">
+    <client-only>
+      <vue-html2pdf
+        :show-layout="controlValue.showLayout"
+        :float-layout="controlValue.floatLayout"
+        :enable-download="controlValue.enableDownload"
+        :preview-modal="controlValue.previewModal"
+        :filename="controlValue.filename"
+        :paginate-elements-by-height="controlValue.paginateElementsByHeight"
+        :pdf-quality="controlValue.pdfQuality"
+        :pdf-format="controlValue.pdfFormat"
+        :pdf-orientation="controlValue.pdfOrientation"
+        :pdf-content-width="controlValue.pdfContentWidth"
+        :manual-pagination="controlValue.manualPagination"
+        :html-to-pdf-options="htmlToPdfOptions"
+        @progress="onProgress($event)"
+        @hasDownloaded="hasDownloaded($event)"
+        ref="html2Pdf"
+      >
+        <Calendar
+          v-if="this.selected && this.getFullYear"
+          :uprn="this.selected.AccountSiteUprn"
+          :postcode="this.postcode"
+          :address="this.calendaraddress"
+          @domRendered="domRendered()"
+          slot="pdf-content"
+        />
+      </vue-html2pdf>
+    </client-only>
+
     <div class="binform">
       <h1 class="subtitle">When is my bin collected?</h1>
       <b-field class="mainsearch" type="is-black">
@@ -13,7 +42,6 @@
           :open-on-focus="true"
           :clear-on-select="false"
           placeholder="e.g. RG1 2LU"
-          icon="earth"
           @typing="getAsyncData"
           @select="selectAddress"
         >
@@ -43,16 +71,25 @@
           <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
         </b-button>
       </b-field>
-
-      <!-- <div v-if="selected">{{selected}}</div>
-      <br />
-      <div v-if="collections.length">{{collections}}</div>-->
+      <div class="slide-container" style="padding-bottom: 0.75rem;">
+        <b-field>
+          <div class="slide-controls">
+            <!-- for testing -->
+            <!-- <b-button style="color:white" @click="gotoFullYear()">Get full year</b-button> -->
+            <b-button
+              :loading="getFullYear"
+              style="color:white"
+              @click="downloadPdf()"
+            >Get full year</b-button>
+          </div>
+        </b-field>
+      </div>
 
       <div v-if="collectionsError" class="tile is-child box">
         <p>No kerbside collection for {{selected.SiteShortAddress}}.</p>
         <p>If this property is a flat there will be an alternative collection arrangement.</p>
       </div>
-
+      <!-- output year collection to test -->
       <div class="tile is-ancestor">
         <div v-if="collections.length" class="tile is-vertical is-parent">
           <div class="tile is-child box">
@@ -95,24 +132,137 @@
 <script>
 import axios from "axios";
 import debounce from "lodash/debounce";
+import defer from "promise-defer";
+import jsPDF from "jspdf";
+import Calendar from "@/components/calendar";
 
 export default {
   data() {
     return {
       name: "",
+      postcode: "",
+      calendaraddress: "",
       data: [],
       results: [],
-      selected: {},
+      selected: null,
       isFetching: false,
       isExpanded: false,
+      contentRendered: false,
       addresses: [],
       collections: [],
+      longcollections: [],
       collectionsError: false,
-      // wp: process.env.WP_URL,
-      // base_url: process.env.BASE_URL,
+      byCalendar: false,
+      byDateRange: false,
+      getFullYear: false,
+      previosSwitch: "",
+      collectionDisplay: [],
+      date: [],
+      dates: [],
+      controlValue: {
+        showLayout: false,
+        floatLayout: true,
+        enableDownload: false,
+        previewModal: true,
+        paginateElementsByHeight: 1100,
+        manualPagination: false,
+        filename: "HeeHee",
+        pdfQuality: 2,
+        pdfFormat: "a4",
+        pdfOrientation: "portrait",
+        pdfContentWidth: "800px",
+      },
     };
   },
+  components: {
+    Calendar,
+  },
+  computed: {
+    htmlToPdfOptions() {
+      return {
+        margin: 0,
+        filename: "heehee.pdf",
+        image: {
+          type: "jpeg",
+          quality: 0.98,
+        },
+        enableLinks: true,
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+        },
+        jsPDF: {
+          unit: "in",
+          format: "a4",
+          orientation: "portrait",
+        },
+      };
+    },
+  },
   methods: {
+    async downloadPdf() {
+      //check we have postcode and uprn
+      //if false, display modal asking for postcode
+      if (this.selected == null) {
+        this.$buefy.dialog.alert({
+          title: "Oops!",
+          message: "Please enter a postcode and select an address!",
+          confirmText: "Ok!",
+        });
+      } else {
+        //might not need postcode! change to regex for global
+        this.calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "");
+
+        //set loading state of button
+        this.getFullYear = true;
+        this.contentRendered = false;
+      }
+
+    },
+    onProgress(progress) {
+      this.progress = progress;
+      console.log(`PDF generation progress: ${progress}%`);
+    },
+    hasDownloaded(blobPdf) {
+      console.log(`PDF has downloaded yehey`);
+      this.getFullYear = false;
+      // console.log(blobPdf);
+    },
+    domRendered() {
+      console.log("Dom Has Rendered and get request done");
+      this.contentRendered = true;
+      this.$refs.html2Pdf.generatePdf();
+    },
+    pdfgencss() {
+      console.log("test pdf output with css");
+      if (process.browser) {
+        window.print();
+      }
+    },
+    gotoFullYear() {
+      if (this.selected == null) {
+        this.$buefy.dialog.alert({
+          title: "Oops!",
+          message: "Please enter a postcode and select an address!",
+          confirmText: "Ok!",
+        });
+      } else {
+        //might not need postcode! change to regex for global
+        var calendaraddress = this.selected.SiteShortAddress.replaceAll(
+          ",",
+          ""
+        );
+        this.$router.push({
+          path:
+            "/pdf/" +
+            this.selected.AccountSiteUprn +
+            "/" +
+            this.postcode +
+            "/" +
+            calendaraddress,
+        });
+      }
+    },
     getAsyncData: debounce(function (name) {
       if (!name.length) {
         this.data = [];
@@ -126,7 +276,6 @@ export default {
             this.data = [];
             if (data.Addresses != null) {
               data.Addresses.forEach((item) => this.data.push(item));
-
               //sort addresses
               this.data = this.data.sort(this.compareAddress);
             }
@@ -142,13 +291,11 @@ export default {
         this.data = [];
       }
     }, 500),
-
     valid_postcode(postcode) {
       postcode = postcode.replace(/\s/g, "");
       var regex = /^[A-Z]{1,2}[0-9]{1,2} ?[0-9][A-Z]{2}$/i;
       return regex.test(postcode);
     },
-
     compareAddress(a, b) {
       // check for numberhood
       a = a.SiteShortAddress.split(",")[0];
@@ -167,13 +314,10 @@ export default {
         return a.localeCompare(b);
       }
       if (wordA || wordB) return (wordA && -1) || 1;
-
       return 1; //or whatever logic to sort within non-alphanumeric values
     },
-
     selectAddress(selected) {
       this.collections = [];
-
       this.isFetching = true;
       this.selected = selected;
       axios
@@ -306,7 +450,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .card {
   margin-top: 100px !important;
 }
@@ -320,12 +464,10 @@ export default {
   display: inline-block;
   width: 100%;
 }
-
 .mainsearch {
   display: flex !important;
   justify-content: left !important;
 }
-
 .binform {
   padding-top: 2rem;
   margin-left: 5px;
@@ -340,7 +482,6 @@ export default {
   align-items: flex-start;
   text-align: left;
 }
-
 .title {
   font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -350,7 +491,6 @@ export default {
   color: #000000;
   letter-spacing: 1px;
 }
-
 .subtitle {
   font-weight: 300;
   font-size: 42px;
@@ -358,7 +498,6 @@ export default {
   word-spacing: 5px;
   padding-bottom: 15px;
 }
-
 .links {
   padding-top: 15px;
 }
@@ -384,7 +523,6 @@ p {
   background-color: black !important;
   border-radius: 0%;
 }
-
 .input-shadow {
   color: black !important;
 }

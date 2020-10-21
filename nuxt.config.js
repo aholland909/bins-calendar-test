@@ -28,11 +28,12 @@ export default {
   ** Global CSS
   */
   css: ['./assets/scss/styles.scss'
-  ],
+  ], 
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '@/plugins/vue-html2pdf', mode: 'client' }
   ],
   /*
   ** Nuxt.js dev-modules
