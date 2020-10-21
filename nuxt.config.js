@@ -33,6 +33,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '@/plugins/vue-html2pdf', mode: 'client' }
   ],
   /*
   ** Nuxt.js dev-modules

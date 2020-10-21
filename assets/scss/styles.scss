@@ -43,11 +43,17 @@ $datepicker-item-selected-color: black;
 $datepicker-item-selected-background-color: $transparent;
 $datepicker-today-border: $transparent;
 
+
 //loading variables
 $loading-background: black;
 
 $size-7: 0.2rem;
 
+//pdf modal
+.vue-html2pdf .pdf-preview iframe {
+    border: 0;
+    height: 100%;
+}
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~buefy/src/scss/buefy";

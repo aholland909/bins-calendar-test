@@ -1,11 +1,11 @@
 <template>
-  <div v-if="!isLoading" class="container">
-    <div class="binform-pdf" id="pdf">
+  <section class="pdf-content">
+    <section class="pdf-item">
       <div class="binform-header">
         <div>
           <img class="binform-header-logo" src="~assets/images/RBC.png" alt="RBC Home" />
         </div>
-        <div v-if="this.address" class="binform-address">
+        <div class="binform-address">
           <h1 class="title is-4" style="margin:0px">Collections for:</h1>
           <h2 class="title is-6">{{this.address.replace("%", " ")}}</h2>
         </div>
@@ -44,7 +44,7 @@
             class="bin-cal-datepicker"
           >
             <template slot="header">
-              <span class>{{ formatTitle(n) }}</span>
+              <span class>{{formatTitle(n)}}</span>
             </template>
           </b-datepicker>
         </div>
@@ -55,21 +55,32 @@
       <!-- <div v-for="c in collections" :key="c.id">
         <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
       </div>-->
-    </div>
-  </div>
+    </section>
+  </section>
 </template>
 
 <script>
 import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
-// import * as jsPDF from "jspdf";
 
-// yarn add promise-defer
 export default {
+  props: {
+    uprn: {
+      type: String,
+      required: false,
+    },
+    postcode: {
+      type: String,
+      required: false,
+    },
+    address: {
+      type: String,
+      required: false,
+    },
+  },
   data() {
     return {
-      loadingComponent: null,
       isLoading: true,
       isFullPage: true,
       monthNames: [
@@ -86,20 +97,13 @@ export default {
         "November",
         "December",
       ],
-      path: this.$route.params.pathMatch,
-      uprn: "",
-      postcode: "",
-      address:"",
       collections: [],
       collectionDisplay: [],
     };
   },
+
   mounted() {
-    // this.loadingComponent = this.$buefy.loading.open();
-    var pathArray = this.path.split("/");
-    this.uprn = pathArray[0];
-    this.postcode = pathArray[1];
-    this.address = pathArray[2]
+    //start getcollections
     this.yearOutput();
   },
 
@@ -109,13 +113,8 @@ export default {
       cal.setMonth(cal.getMonth() + m - 1);
       return this.monthNames[cal.getMonth()] + " " + cal.getFullYear();
     },
-    pdfgencss() {
-      console.log("test pdf output with css");
-      if (process.browser) {
-        window.print();
-      }
-    },
     yearOutput() {
+      //maybe needs to the first day of month?
       var today = new Date();
 
       var todayplusyear = new Date(
@@ -140,12 +139,8 @@ export default {
             });
           });
           this.isLoading = false;
+          this.$emit("domRendered");
           // this.loadingComponent.close();
-          setTimeout(() => {
-            if (process.browser) {
-              window.print();
-            }
-          }, 1000);
         });
       } else {
         this.$buefy.dialog.alert({
@@ -153,9 +148,10 @@ export default {
           message: "Please enter a postcode and select an address!",
           confirmText: "Ok!",
         });
-        this.$router.push({
-          path: "/",
-        });
+        //add redirect if needed
+        // this.$router.push({
+        //   path: "/",
+        // });
       }
     },
     getCollectionByDate(uprn, startDate, endDate, collectionsArray) {
@@ -248,22 +244,37 @@ export default {
 };
 </script>
 
-<style scoped>
-.binform-footer{
+<style>
+.pdf-content {
+  display: flex;
+  width: 100%;
+  height: auto;
+  background: white;
+}
+.pdf-item {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  /* width: 100%; */
+  width: 210mm;
+
+  height: auto;
+}
+.binform-footer {
   padding-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.binform-header-logo{
-  height: 100px;
+.binform-header-logo {
+  height: 80px;
 }
-.binform-address{
+.binform-address {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.binform-header{
+.binform-header {
   display: flex;
   justify-content: space-between;
   margin-left: 20px;
@@ -293,8 +304,14 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: white;
-  width: 210mm;
-  height: 287mm;
+  height: unset;
+  /* width: 210mm; */
+  /* height: 100px; */
+}
+.bin-cal-datepicker{
+  border-style: solid;
+  border-color: #bebdbd;
+  border-radius: 1px;
 }
 .dropdown-item,
 .dropdown .dropdown-menu .has-link a {
@@ -316,11 +333,23 @@ export default {
   vertical-align: middle;
   display: table-cell;
   border-radius: 4px;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem 0.5rem !important;
 }
 .datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell {
   padding: 0.3rem 0.5rem 0.6rem;
 }
+
+/* position of event */
+.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell.has-event .events {
+    bottom: .225rem;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    padding: 0 .35rem;
+    position: absolute;
+    width: 100%;
+}
+
 /* full height box */
 .datepicker
   .datepicker-table
@@ -337,17 +366,11 @@ export default {
   .datepicker-cell.has-event {
   color: white;
 }
+
 span {
   font-style: inherit;
   font-weight: inherit;
   z-index: 2;
   position: relative;
-}
-
-@page {
-  size: auto; /* auto is the initial value */
-  /* this affects the margin in the printer settings */
-  margin-top: 1mm;
-  margin-bottom: 0mm;
 }
 </style>

@@ -22,7 +22,8 @@
     "nuxt-buefy": "^0.3.31",
     "promise-defer": "^1.0.0",
     "sass-loader": "^8.0.2",
-    "vue-browser-geolocation": "^1.8.0"
+    "vue-browser-geolocation": "^1.8.0",
+    "vue-html2pdf": "^1.8.0"
   },
   "devDependencies": {}
 }
