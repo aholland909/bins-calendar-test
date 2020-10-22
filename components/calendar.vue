@@ -95,6 +95,7 @@ export default {
   },
 
   mounted() {
+    //merge test
     //start getcollections
     // this.yearOutput();
   },
