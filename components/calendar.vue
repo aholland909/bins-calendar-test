@@ -2,34 +2,10 @@
   <section class="pdf-content">
     <section class="pdf-item">
       <div class="binform-header">
-        <div>
-          <img class="binform-header-logo" src="~assets/images/RBC.png" alt="RBC Home" />
+        <div class="binform-header-text">
+          <div>Waste Collection Calendar</div>
         </div>
-        <div class="binform-address">
-          <h1 class="title is-4" style="margin:0px">Collections for:</h1>
-          <h2 class="title is-6">{{this.address.replace("%", " ")}}</h2>
-        </div>
-      </div>
-      <div class="binform-pdf-key">
-        <div class="key-icons">Key:</div>
-        <div class="key-icons">
-          Food waste
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-twitter"></b-icon>
-        </div>
-        <div class="key-icons">
-          Recycling
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-recycling"></b-icon>
-        </div>
-        <div class="key-icons">
-          Rubbish
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-rubbish"></b-icon>
-        </div>
-        <div class="key-icons">
-          Garden
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-garden"></b-icon>
-        </div>
-        <!-- <p>{{path}}</p> -->
-        <!-- new Date().setFullYear(new Date().getFullYear() + 1) -->
+        <div class="binform-header-round">A</div>
       </div>
       <div class="bin-cal-container" ref="element">
         <div class="bin-cal" v-for="n in 12" :key="n">
@@ -69,14 +45,17 @@ export default {
     uprn: {
       type: String,
       required: false,
+      default: "",
     },
     postcode: {
       type: String,
       required: false,
+      default: "",
     },
     address: {
       type: String,
       required: false,
+      default: "",
     },
   },
   data() {
@@ -99,12 +78,25 @@ export default {
       ],
       collections: [],
       collectionDisplay: [],
+      newCollections:[
+        {
+          month: "February 2021",
+          collectionDates: [
+            {
+              date: "Monday 1st",
+              collections : {
+                collection: [{name: "food"}, {name: "recycling"}]
+              }
+            }
+          ]
+        }
+      ]
     };
   },
 
   mounted() {
     //start getcollections
-    this.yearOutput();
+    // this.yearOutput();
   },
 
   methods: {
@@ -113,105 +105,105 @@ export default {
       cal.setMonth(cal.getMonth() + m - 1);
       return this.monthNames[cal.getMonth()] + " " + cal.getFullYear();
     },
-    yearOutput() {
-      //maybe needs to the first day of month?
-      var today = new Date();
+    // yearOutput() {
+    //   //maybe needs to the first day of month?
+    //   var today = new Date();
 
-      var todayplusyear = new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1)
-      );
+    //   var todayplusyear = new Date(
+    //     new Date().setFullYear(new Date().getFullYear() + 1)
+    //   );
 
-      this.collections = [];
-      if (this.uprn != null && this.uprn.length == 9) {
-        this.getCollectionByDate(
-          this.uprn,
-          today,
-          todayplusyear,
-          this.collections
-        ).then(() => {
-          // update other cal
-          this.collectionDisplay = [];
-          this.collections.forEach((item) => {
-            // console.log(item);
-            this.collectionDisplay.push({
-              date: this.dateFormatter(item.Date),
-              type: this.getBinColors(item.Service),
-            });
-          });
-          this.isLoading = false;
-          this.$emit("domRendered");
-          // this.loadingComponent.close();
-        });
-      } else {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
-        //add redirect if needed
-        // this.$router.push({
-        //   path: "/",
-        // });
-      }
-    },
-    getCollectionByDate(uprn, startDate, endDate, collectionsArray) {
-      var deferred = defer();
-      var formattedstartDate =
-        new Date(startDate).getFullYear() +
-        "-" +
-        (new Date(startDate).getMonth() + 1) +
-        "-" +
-        new Date(startDate).getDate();
-      //   console.log("formatted data " + formattedstartDate);
-      axios
-        .get(
-          "https://api.reading.gov.uk/" +
-            "rbc/mycollections/" +
-            uprn +
-            "/" +
-            formattedstartDate
-        )
-        .then((response) => {
-          // handle success
-          if (response.data.Collections) {
-            if (new Date(startDate) < new Date(endDate)) {
-              response.data.Collections.forEach((item) =>
-                collectionsArray.push(item)
-              );
-              //add one day to new start date
-              var oldStartDate = this.dateFormatter(
-                collectionsArray[collectionsArray.length - 1].Date
-              );
-              startDate = oldStartDate.setDate(oldStartDate.getDate() + 1);
+    //   this.collections = [];
+    //   if (this.uprn != null && this.uprn.length == 9) {
+    //     this.getCollectionByDate(
+    //       this.uprn,
+    //       today,
+    //       todayplusyear,
+    //       this.collections
+    //     ).then(() => {
+    //       // update other cal
+    //       this.collectionDisplay = [];
+    //       this.collections.forEach((item) => {
+    //         // console.log(item);
+    //         this.collectionDisplay.push({
+    //           date: this.dateFormatter(item.Date),
+    //           type: this.getBinColors(item.Service),
+    //         });
+    //       });
+    //       this.isLoading = false;
+    //       this.$emit("domRendered");
+    //       // this.loadingComponent.close();
+    //     });
+    //   } else {
+    //     this.$buefy.dialog.alert({
+    //       title: "Oops!",
+    //       message: "Please enter a postcode and select an address!",
+    //       confirmText: "Ok!",
+    //     });
+    //     //add redirect if needed
+    //     // this.$router.push({
+    //     //   path: "/",
+    //     // });
+    //   }
+    // },
+    // getCollectionByDate(uprn, startDate, endDate, collectionsArray) {
+    //   var deferred = defer();
+    //   var formattedstartDate =
+    //     new Date(startDate).getFullYear() +
+    //     "-" +
+    //     (new Date(startDate).getMonth() + 1) +
+    //     "-" +
+    //     new Date(startDate).getDate();
+    //   //   console.log("formatted data " + formattedstartDate);
+    //   axios
+    //     .get(
+    //       "https://api.reading.gov.uk/" +
+    //         "rbc/mycollections/" +
+    //         uprn +
+    //         "/" +
+    //         formattedstartDate
+    //     )
+    //     .then((response) => {
+    //       // handle success
+    //       if (response.data.Collections) {
+    //         if (new Date(startDate) < new Date(endDate)) {
+    //           response.data.Collections.forEach((item) =>
+    //             collectionsArray.push(item)
+    //           );
+    //           //add one day to new start date
+    //           var oldStartDate = this.dateFormatter(
+    //             collectionsArray[collectionsArray.length - 1].Date
+    //           );
+    //           startDate = oldStartDate.setDate(oldStartDate.getDate() + 1);
 
-              this.getCollectionByDate(
-                uprn,
-                startDate,
-                endDate,
-                collectionsArray
-              ).then(function () {
-                deferred.resolve();
-              });
-            } else {
-              deferred.resolve();
-            }
-          }
-        })
-        .catch((error) => {
-          // handle 404 error
-          console.log(error);
-          this.$buefy.dialog.alert({
-            title: "Oops!",
-            message: "Please enter a postcode and select an address!",
-            confirmText: "Ok!",
-          });
-          this.$router.push({
-            path: "/",
-          });
-        });
+    //           this.getCollectionByDate(
+    //             uprn,
+    //             startDate,
+    //             endDate,
+    //             collectionsArray
+    //           ).then(function () {
+    //             deferred.resolve();
+    //           });
+    //         } else {
+    //           deferred.resolve();
+    //         }
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       // handle 404 error
+    //       console.log(error);
+    //       this.$buefy.dialog.alert({
+    //         title: "Oops!",
+    //         message: "Please enter a postcode and select an address!",
+    //         confirmText: "Ok!",
+    //       });
+    //       this.$router.push({
+    //         path: "/",
+    //       });
+    //     });
 
-      return deferred.promise;
-    },
+    //   return deferred.promise;
+    // },
     getBinColors(serviceString) {
       if (serviceString == "Recycling Collection Service") {
         return "is-recycling";
@@ -266,20 +258,42 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.binform-header-logo {
-  height: 80px;
+
+.binform-header {
+  display: flex;
+  justify-content: space-between;
+  height: 45px;
+  background-color: rgb(160, 202, 97);
+  margin-left: 20px;
+  margin-right: 20px;
 }
+
+.binform-header-text {
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.binform-header-round{
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
 .binform-address {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.binform-header {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 20px;
-  margin-right: 20px;
-}
+
 .key-icons {
   padding-right: 20px;
 }
@@ -308,7 +322,7 @@ export default {
   /* width: 210mm; */
   /* height: 100px; */
 }
-.bin-cal-datepicker{
+.bin-cal-datepicker {
   border-style: solid;
   border-color: #bebdbd;
   border-radius: 1px;
@@ -340,14 +354,18 @@ export default {
 }
 
 /* position of event */
-.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell.has-event .events {
-    bottom: .225rem;
-    display: flex;
-    justify-content: center;
-    left: 0;
-    padding: 0 .35rem;
-    position: absolute;
-    width: 100%;
+.datepicker
+  .datepicker-table
+  .datepicker-body.has-events
+  .datepicker-cell.has-event
+  .events {
+  bottom: 0.225rem;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  padding: 0 0.35rem;
+  position: absolute;
+  width: 100%;
 }
 
 /* full height box */
