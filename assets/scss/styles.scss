@@ -54,6 +54,13 @@ $size-7: 0.2rem;
     border: 0;
     height: 100%;
 }
+
+//buttons
+.button {
+  background-color: black !important;
+  border-radius: 0%;
+}
+
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~buefy/src/scss/buefy";

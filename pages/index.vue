@@ -135,6 +135,7 @@ import debounce from "lodash/debounce";
 import defer from "promise-defer";
 import jsPDF from "jspdf";
 import Calendar from "@/components/calendar";
+import Notification from "@/components/notification";
 
 export default {
   data() {
@@ -217,7 +218,6 @@ export default {
         this.getFullYear = true;
         this.contentRendered = false;
       }
-
     },
     onProgress(progress) {
       this.progress = progress;
@@ -340,6 +340,7 @@ export default {
         })
         .finally(() => {
           this.isFetching = false;
+          this.christmasCollections();
         });
     },
     formatDate(date) {
@@ -372,6 +373,15 @@ export default {
       ];
       var d = this.dateFormatter(date);
       return days[d.getDay()];
+    },
+    christmasCollections() {
+      this.$buefy.modal.open({
+          parent: this,
+          component: Notification,
+          hasModalCard: true,
+          trapFocus: true,
+          canCancel: ["escape", "outside"]
+      })
     },
     addressFindError() {
       this.$buefy.dialog.alert({
