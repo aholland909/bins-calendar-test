@@ -37,6 +37,7 @@
           size="is-large"
           v-model="name"
           ref="autocomplete"
+          field="SiteShortAddress"
           :data="data"
           :loading="isFetching"
           :open-on-focus="true"
@@ -217,7 +218,6 @@ export default {
         this.getFullYear = true;
         this.contentRendered = false;
       }
-
     },
     onProgress(progress) {
       this.progress = progress;
