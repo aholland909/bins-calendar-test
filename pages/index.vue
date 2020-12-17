@@ -37,7 +37,8 @@
           size="is-large"
           v-model="name"
           ref="autocomplete"
-          field="SiteShortAddress"
+          field="address"
+          clearable
           :data="data"
           :loading="isFetching"
           :open-on-focus="true"
@@ -49,7 +50,7 @@
           <template slot-scope="props">
             <div class="media">
               <div class="media-content search-result">
-                <p>{{props.option.SiteShortAddress}}</p>
+                <p>{{props.option.address}}</p>
               </div>
             </div>
           </template>
@@ -77,24 +78,25 @@
           <div class="slide-controls">
             <!-- for testing -->
             <!-- <b-button style="color:white" @click="gotoFullYear()">Get full year</b-button> -->
-            <b-button
+            <!-- <b-button
               :loading="getFullYear"
               style="color:white"
               @click="downloadPdf()"
-            >Get full year</b-button>
+            >Get full year</b-button>-->
           </div>
         </b-field>
       </div>
-
-      <div v-if="collectionsError" class="tile is-child box">
+      <!-- need to change error message -->
+      <!-- <div v-if="collectionsError" class="tile is-child box">
         <p>No kerbside collection for {{selected.SiteShortAddress}}.</p>
         <p>If this property is a flat there will be an alternative collection arrangement.</p>
-      </div>
+      </div>-->
       <!-- output year collection to test -->
       <div class="tile is-ancestor">
         <div v-if="collections.length" class="tile is-vertical is-parent">
+          <!-- extract address from property -->
           <div class="tile is-child box">
-            <p class="title is-2">Address: {{selected.SiteShortAddress}}</p>
+            <p class="title is-2">Address: {{userSelectAddress}}</p>
           </div>
           <div v-for="c in collections" :key="c.id" class="tile is-child box">
             <p class="title is-2">{{changeServiceName(c.Service)}}</p>
@@ -136,6 +138,7 @@ import debounce from "lodash/debounce";
 import defer from "promise-defer";
 import jsPDF from "jspdf";
 import Calendar from "@/components/calendar";
+import fuzzysort from "fuzzysort";
 
 export default {
   data() {
@@ -146,6 +149,7 @@ export default {
       data: [],
       results: [],
       selected: null,
+      userSelectAddress: "",
       isFetching: false,
       isExpanded: false,
       contentRendered: false,
@@ -268,16 +272,32 @@ export default {
         this.data = [];
         return;
       }
-      if (this.valid_postcode(name)) {
+      if (name) {
         this.isFetching = true;
         axios
-          .get("https://api.reading.gov.uk/rbc/getaddresses/" + name)
+          .get(
+            "https://api.getaddress.io/autocomplete/" +
+              name +
+              "?api-key=" +
+              process.env.GETADDRESSIO
+          )
           .then(({ data }) => {
-            this.data = [];
-            if (data.Addresses != null) {
-              data.Addresses.forEach((item) => this.data.push(item));
-              //sort addresses
-              this.data = this.data.sort(this.compareAddress);
+            // this.data = [];
+            if (data.suggestions != null) {
+              //move reading address to top
+              var priority = [];
+              var lowpriority = [];
+              data.suggestions.forEach((item) => {
+                if (
+                  item.address.search("Reading") > 0 ||
+                  item.address.search("Berkshire") > 0
+                ) {
+                  priority.push(item);
+                } else {
+                  lowpriority.push(item);
+                }
+              });
+              this.data = priority.concat(lowpriority);
             }
           })
           .catch((error) => {
@@ -317,26 +337,94 @@ export default {
       return 1; //or whatever logic to sort within non-alphanumeric values
     },
     selectAddress(selected) {
+      this.userSelectAddress = selected.address;
+      this.name = this.userSelectAddress;
+      console.log(selected);
+      // getAddress get postcode
       this.collections = [];
-      this.isFetching = true;
-      this.selected = selected;
       axios
         .get(
-          "https://api.reading.gov.uk/rbc/mycollections/" +
-            this.selected.AccountSiteUprn
+          "https://api.getaddress.io" +
+            selected.url +
+            "?api-key=" +
+            process.env.GETADDRESSIO
         )
         .then(({ data }) => {
-          this.collections = [];
-          if (data.Error == "No results returned") {
-            this.collectionsError = true;
+          if (
+            data.county == "Berkshire" ||
+            data.district == "Reading" ||
+            data.town_or_city == "Reading"
+          ) {
+            console.log(data);
+            var postcode = data.postcode;
+            //remove new line and upper case
+            var address = data.line_1 + " " + data.postcode;
+            axios
+              .get("https://api.reading.gov.uk/rbc/getaddresses/" + postcode)
+              .then(({ data }) => {
+                if (data.Addresses === null) {
+                  throw "Address not in Reading";
+                }
+                //match selected address with address from post code list
+                console.log(data.Addresses);
+                //fuzzy search might take some time!
+                var UPRNpromise = fuzzysort.goAsync(address, data.Addresses, {
+                  key: "SiteShortAddress",
+                });
+
+                UPRNpromise.then((results) => {
+                  console.log(results);
+                  var uprn = "";
+                  if (results.length == 0) {
+                    //only property for at postcode?
+                    uprn = data.Addresses[0].AccountSiteUprn;
+                  } else if (results.length) {
+                    uprn = results[0].obj.AccountSiteUprn;
+                  } else {
+                    throw "Error with address lookup, please try again";
+                  }
+                  console.log(uprn);
+                  axios
+                    .get("https://api.reading.gov.uk/rbc/mycollections/" + uprn)
+                    .then(({ data }) => {
+                      this.collections = [];
+                      console.log(data.Collections);
+                      // No kerbside collection
+                      if (data.Error == "No results returned") {
+                        this.collectionsError = true;
+                      } else {
+                        data.Collections.forEach((item) =>
+                          this.collections.push(item)
+                        );
+                        this.collectionsError = false;
+                      }
+                    })
+                    .catch((error) => {
+                      this.data = [];
+                      throw error;
+                    });
+                });
+              })
+              .catch((error) => {
+                this.data = [];
+                this.$buefy.dialog.alert({
+                  title: "Oops!",
+                  message: error,
+                  confirmText: "Ok!",
+                });
+              });
           } else {
-            data.Collections.forEach((item) => this.collections.push(item));
-            this.collectionsError = false;
+            throw "Address not in Reading";
+            this.userSelectAddress = "";
           }
         })
         .catch((error) => {
           this.data = [];
-          throw error;
+          this.$buefy.dialog.alert({
+            title: "Oops!",
+            message: error,
+            confirmText: "Ok!",
+          });
         })
         .finally(() => {
           this.isFetching = false;
