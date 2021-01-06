@@ -1,10 +1,6 @@
 
 
 export default {
-  env: {
-    wordpressdata: "https://www.wordpress.com"
-    
-  },
   mode: 'universal',
   /*
   ** Headers of the page
