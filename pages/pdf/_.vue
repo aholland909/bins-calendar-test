@@ -1,64 +1,16 @@
 <template>
-  <div v-if="!isLoading" class="container">
-    <div class="binform-pdf" id="pdf">
-      <div class="binform-header">
-        <div>
-          <img class="binform-header-logo" src="~assets/images/RBC.png" alt="RBC Home" />
-        </div>
-        <div v-if="this.address" class="binform-address">
-          <h1 class="title is-4" style="margin:0px">Collections for:</h1>
-          <h2 class="title is-6">{{this.address.replace("%", " ")}}</h2>
-        </div>
-      </div>
-      <div class="binform-pdf-key">
-        <div class="key-icons">Key:</div>
-        <div class="key-icons">
-          Food waste
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-twitter"></b-icon>
-        </div>
-        <div class="key-icons">
-          Recycling
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-recycling"></b-icon>
-        </div>
-        <div class="key-icons">
-          Rubbish
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-rubbish"></b-icon>
-        </div>
-        <div class="key-icons">
-          Garden
-          <b-icon icon="checkbox-blank" size="is-small" class="material-icons" type="is-garden"></b-icon>
-        </div>
-        <!-- <p>{{path}}</p> -->
-        <!-- new Date().setFullYear(new Date().getFullYear() + 1) -->
-      </div>
-      <div class="bin-cal-container" ref="element">
-        <div class="bin-cal" v-for="n in 12" :key="n">
-          <b-datepicker
-            :date-creator="() => { let date = new Date();
-              return new Date(date.setMonth(new Date().getMonth() + n-1));}"
-            inline
-            size="is-size-7"
-            :mobile-native="false"
-            :events="collectionDisplay"
-            indicators="bars"
-          >
-            <template slot="header">
-              <span class>{{ formatTitle(n) }}</span>
-            </template>
-          </b-datepicker>
-        </div>
-      </div>
-      <div class="binform-footer">
-        <h1 class="title is-6" style="margin:0px">Dates subject to change</h1>
-      </div>
-      <!-- <div v-for="c in collections" :key="c.id">
-        <p style="font-size: 0.8rem;font-weight: 300;">{{c}}</p>
-      </div>-->
-    </div>
+  <div v-if="!isLoading" class="cal-container">
+      <Calendar
+        :uprn="this.uprn"
+        :postcode="this.postcode"
+        :address="this.address"
+        @domRendered="domRendered()"
+      />
   </div>
 </template>
 
 <script>
+import Calendar from "@/components/calendar";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
@@ -93,26 +45,37 @@ export default {
       collectionDisplay: [],
     };
   },
+  components: {
+    Calendar,
+  },
   mounted() {
-    this.loadingComponent = this.$buefy.loading.open();
+    this.loadingComponent = this.$buefy.loading.open(); //disable for testing
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
     this.address = pathArray[2]
-    this.yearOutput();
+    // this.yearOutput();
+    this.isLoading = false;
   },
 
   methods: {
-    formatTitle(m) {
-      var cal = new Date();
-      cal.setMonth(cal.getMonth() + m - 1);
-      return this.monthNames[cal.getMonth()] + " " + cal.getFullYear();
-    },
     pdfgencss() {
       console.log("test pdf output with css");
       if (process.browser) {
         window.print();
       }
+    },
+    domRendered() {
+      console.log("Cal Has Rendered");
+      this.isLoading = false; //disable for testing
+      this.loadingComponent.close(); //disable for testing
+
+      // setTimeout(() => {
+      //       if (process.browser) {
+      //         window.print();
+      //       }
+      //     }, 2000);
+
     },
     yearOutput() {
       var today = new Date();
@@ -248,99 +211,8 @@ export default {
 </script>
 
 <style>
-.binform-footer{
-  padding-top: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.binform-header-logo{
-  height: 100px;
-}
-.binform-address{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.binform-header{
-  display: flex;
-  justify-content: space-between;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.key-icons {
-  padding-right: 20px;
-}
-.binform-pdf-key {
-  margin-left: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.bin-cal {
-  display: flex;
-  padding-top: 0.5rem;
-}
-.bin-cal-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.binform-pdf {
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  width: 210mm;
-  height: 287mm;
-}
-.dropdown-item,
-.dropdown .dropdown-menu .has-link a {
-  color: #4a4a4a;
-  display: block;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  padding: 0.375rem 0.5rem;
-  padding-top: 0rem;
-  position: relative;
-}
-.datepicker .datepicker-header {
-  padding-bottom: 0.2rem;
-  margin-bottom: 0rem;
-  border-bottom: 1px solid #dbdbdb;
-}
-.datepicker .datepicker-table .datepicker-cell {
-  text-align: center;
-  vertical-align: middle;
-  display: table-cell;
-  border-radius: 4px;
-  padding: 0.3rem 0.5rem;
-}
-.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell {
-  padding: 0.3rem 0.5rem 0.6rem;
-}
-/* full height box */
-.datepicker
-  .datepicker-table
-  .datepicker-body.has-events
-  .datepicker-cell.has-event.bars
-  .event {
-  height: 1.75em;
-  width: 100%;
-}
-
-.datepicker
-  .datepicker-table
-  .datepicker-body.has-events
-  .datepicker-cell.has-event {
-  color: white;
-}
-span {
-  font-style: inherit;
-  font-weight: inherit;
-  z-index: 999;
-  position: relative;
+.cal-container{
+  width: 220mm;
 }
 
 * {
@@ -349,8 +221,13 @@ span {
 }
 @page {
   size: auto; /* auto is the initial value */
+  width: 100%;
+  height: 100%;
   /* this affects the margin in the printer settings */
-  margin-top: 1mm;
+  margin-top: 0mm;
   margin-bottom: 0mm;
+  margin-right: 0mm;
+  margin-left: 0mm;
+
 }
 </style>
