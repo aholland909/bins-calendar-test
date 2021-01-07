@@ -1,11 +1,18 @@
 <template>
   <div v-if="!isLoading" class="cal-container">
-      <Calendar
-        :uprn="this.uprn"
-        :postcode="this.postcode"
-        :address="this.address"
-        @domRendered="domRendered()"
-      />
+    <b-button class="bin-cal-print-button" style="color:black;margin: 5mm;" @click="pdfgencss()">
+      <div class="button-container">
+        <b-icon icon="printer" custom-size="mdi-36px" class="material-icons"></b-icon>
+        <span style="padding-left:1rem">Download PDF</span>
+      </div>
+    </b-button>
+
+    <Calendar
+      :uprn="this.uprn"
+      :postcode="this.postcode"
+      :address="this.address"
+      @domRendered="domRendered()"
+    />
   </div>
 </template>
 
@@ -40,7 +47,7 @@ export default {
       path: this.$route.params.pathMatch,
       uprn: "",
       postcode: "",
-      address:"",
+      address: "",
       collections: [],
       collectionDisplay: [],
     };
@@ -53,14 +60,13 @@ export default {
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
-    this.address = pathArray[2]
+    this.address = pathArray[2];
     // this.yearOutput();
     this.isLoading = false;
   },
 
   methods: {
     pdfgencss() {
-      console.log("test pdf output with css");
       if (process.browser) {
         window.print();
       }
@@ -75,7 +81,6 @@ export default {
       //         window.print();
       //       }
       //     }, 2000);
-
     },
     yearOutput() {
       var today = new Date();
@@ -211,7 +216,16 @@ export default {
 </script>
 
 <style>
-.cal-container{
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+}
+/* .bin-cal-print-button > span{
+  
+} */
+.cal-container {
   width: 220mm;
 }
 
@@ -228,6 +242,13 @@ export default {
   margin-bottom: 0mm;
   margin-right: 0mm;
   margin-left: 0mm;
-
+}
+@media print {
+  .bin-cal-print-button {
+    display: none;
+  }
+  .cal-container {
+    width: 220mm;
+  }
 }
 </style>

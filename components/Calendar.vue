@@ -9,11 +9,9 @@
             </div>
             <!-- <div class="binform-banner-round">A</div> -->
           </div>
-          <div class="binform-address">
-            {{this.address}}
-          </div>
+          <div class="binform-address">{{this.address}}</div>
           <div class="binform-header">
-            <img src="~/assets/images/bin-cal-key-slim.jpg" />
+            <img src="~/assets/images/bin-cal-key.jpg" />
           </div>
 
           <div class="bin-cal-container">
@@ -1329,6 +1327,7 @@ export default {
   },
 
   methods: {
+    
     formatTitle(datetime) {
       var cal = new Date(datetime);
       return this.monthNames[cal.getMonth()] + " " + cal.getFullYear();
@@ -1425,14 +1424,15 @@ export default {
       //first day of month
       var today = new Date();
       today.setDate(1);
-      today.setMonth(new Date().getMonth() + 1);
+      today.setMonth(new Date().getMonth());
       today.setHours(0, 0, 0, 0);
       var todayplusyear = new Date();
       todayplusyear.setDate(1);
       todayplusyear.setHours(0, 0, 0, 0);
-      todayplusyear.setMonth(new Date().getMonth() + 1);
+      todayplusyear.setMonth(new Date().getMonth());
       todayplusyear.setFullYear(today.getFullYear() + 1);
-
+      console.log(today);
+      console.log(todayplusyear);
       this.collections = [];
       if (this.uprn != null && this.uprn.length == 9) {
         this.getCollectionByDate(
@@ -1637,8 +1637,8 @@ body {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 .subpage {
-  //   padding: 1]cm;
-//   border: 5px red solid;
+  //   padding: 1cm;
+  //   border: 5px red solid;
   height: 284.4mm;
   display: flex;
   //   outline: 2cm #ffeaea solid;
@@ -1663,6 +1663,10 @@ body {
     box-shadow: initial;
     background: initial;
     page-break-after: always;
+  }
+  .subpage {
+    height: 284.4mm;
+    display: flex;
   }
 }
 
@@ -1723,12 +1727,12 @@ body {
   font-weight: 700;
 }
 
-.binform-address{
-    width: 100%;
-    padding-left: 25px;
-    font-size: 1.5rem;
-    font-weight: 655;
-    background-color: #ece5d5;
+.binform-address {
+  width: 100%;
+  padding-left: 25px;
+  font-size: 1.5rem;
+  font-weight: 655;
+  background-color: #ece5d5;
 }
 
 .bin-cal-item {
@@ -1738,16 +1742,16 @@ body {
   // padding-bottom: 5px;
   padding-left: 15px;
   padding-right: 15px;
+  padding-top: 3px;
 }
 
 .bin-cal-heading {
   background-color: rgb(244, 100, 36);
-  margin-bottom: 7px;
   color: white;
   padding-left: 15px;
   font-size: x-large;
   font-weight: 700;
-  padding-bottom: 2px;
+  // padding-bottom: 2px;
   /* padding-top: 2px;  */
 }
 .bin-cal-item-date {
@@ -1759,8 +1763,10 @@ body {
 
 .bin-cal-item-images-container {
   display: flex;
+  height: 24px;
+  width: auto;
 }
-.bin-image{
+.bin-image {
   height: 24px;
   width: auto;
 }
@@ -1797,7 +1803,7 @@ body {
   padding-left: 15px;
   padding-right: 15px;
   background-color: white;
-
+  // flex-grow: 1; //expand cal containers to fill gap?
 }
 .binform-pdf {
   display: flex;
@@ -1807,73 +1813,4 @@ body {
   /* width: 210mm; */
   /* height: 100px; */
 }
-/* .bin-cal-datepicker {
-  border-style: solid;
-  border-color: #bebdbd;
-  border-radius: 1px;
-}
-.dropdown-item,
-.dropdown .dropdown-menu .has-link a {
-  color: #4a4a4a;
-  display: block;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  padding: 0.375rem 0.5rem;
-  padding-top: 0rem;
-  position: relative;
-}
-.datepicker .datepicker-header {
-  padding-bottom: 0.2rem;
-  margin-bottom: 0rem;
-  border-bottom: 1px solid #dbdbdb;
-}
-.datepicker .datepicker-table .datepicker-cell {
-  text-align: center;
-  vertical-align: middle;
-  display: table-cell;
-  border-radius: 4px;
-  padding: 0.3rem 0.5rem !important;
-}
-.datepicker .datepicker-table .datepicker-body.has-events .datepicker-cell {
-  padding: 0.3rem 0.5rem 0.6rem;
-}/*
-
-/* position of event */
-/* .datepicker
-  .datepicker-table
-  .datepicker-body.has-events
-  .datepicker-cell.has-event
-  .events {
-  bottom: 0.225rem;
-  display: flex;
-  justify-content: center;
-  left: 0;
-  padding: 0 0.35rem;
-  position: absolute;
-  width: 100%;
-} */
-
-/* full height box */ /*
-.datepicker
-  .datepicker-table
-  .datepicker-body.has-events
-  .datepicker-cell.has-event.bars
-  .event {
-  height: 1.75em;
-  width: 100%;
-}
-
-.datepicker
-  .datepicker-table
-  .datepicker-body.has-events
-  .datepicker-cell.has-event {
-  color: white;
-}
-
-span {
-  font-style: inherit;
-  font-weight: inherit;
-  z-index: 2;
-  position: relative;
-} */
 </style>

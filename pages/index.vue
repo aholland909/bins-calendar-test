@@ -42,11 +42,10 @@
           <b-icon icon="magnify" size="is-medium" class="material-icons"></b-icon>
         </b-button>
       </b-field>
-      <div class="slide-container" style="padding-bottom: 0.75rem;">
+      <div v-if="collections.length" class="slide-container" style="padding-bottom: 0.75rem;">
         <b-field>
           <div class="slide-controls">
             <b-button style="color:white" @click="gotoFullYear()">Get full year</b-button>
-            <b-button style="color:white" @click="pdfgencss()">Download PDF</b-button>
             <!-- <b-switch v-model="getYear" @input="yearOutput()">Get year data</b-switch> -->
           </div>
         </b-field>
