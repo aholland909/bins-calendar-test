@@ -56,7 +56,7 @@ export default {
     Calendar,
   },
   mounted() {
-    this.loadingComponent = this.$buefy.loading.open(); //disable for testing
+    // this.loadingComponent = this.$buefy.loading.open(); //disable for testing
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
@@ -73,8 +73,8 @@ export default {
     },
     domRendered() {
       console.log("Cal Has Rendered");
-      this.isLoading = false; //disable for testing
-      this.loadingComponent.close(); //disable for testing
+      // this.isLoading = false; //disable for testing
+      // this.loadingComponent.close(); //disable for testing
 
       // setTimeout(() => {
       //       if (process.browser) {
@@ -215,7 +215,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .button-container {
   display: flex;
   justify-content: center;
@@ -248,7 +248,7 @@ export default {
     display: none;
   }
   .cal-container {
-    width: 220mm;
+    width: 220mm !important;
   }
 }
 </style>

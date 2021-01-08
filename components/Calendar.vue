@@ -10,10 +10,21 @@
             <!-- <div class="binform-banner-round">A</div> -->
           </div>
           <div class="binform-address">{{this.address}}</div>
-          <div class="binform-header">
-            <img src="~/assets/images/bin-cal-key.jpg" />
+          <div class="binform-info-banner">
+            <div class="binform-info-text">
+              Garden waste collection days will not change. Collection dates can be found at:
+              <a>www.reading.gov.uk/bin-calendar/</a>
+            </div>
+            <div class="binform-key">
+              <div v-for="n in 4" :key="n">
+                <img class="bin-key-image" :src="require(`~/assets/icons/binKey/binimage${n}.jpg`)" />
+              </div>
+            </div>
           </div>
-
+          <div class="binform-reminder">
+            For a reminder of what you can put in each bin please visit:
+            <a>www.reading.gov.uk/recycling</a>
+          </div>
           <div class="bin-cal-container">
             <div
               class="bin-cal"
@@ -51,8 +62,20 @@
             </div>
             <!-- <div class="binform-banner-round">A</div> -->
           </div>
-          <div class="binform-header">
-            <img src="~/assets/images/bin-cal-key-slim.jpg" />
+          <div class="binform-info-banner">
+            <div class="binform-info-text">
+              Garden waste collection days will not change. Collection dates can be found at:
+              <a>www.reading.gov.uk/bin-calendar/</a>
+            </div>
+            <div class="binform-key">
+              <div v-for="n in 4" :key="n">
+                <img class="bin-key-image" :src="require(`~/assets/icons/binKey/binimage${n}.jpg`)" />
+              </div>
+            </div>
+          </div>
+          <div class="binform-reminder">
+            For a reminder of what you can put in each bin please visit:
+            <a>www.reading.gov.uk/recycling</a>
           </div>
           <div class="bin-cal-container">
             <div
@@ -1322,12 +1345,11 @@ export default {
   mounted() {
     //start getcollections
     // console.log(this.groupedCollectionsTemp);
-    this.yearOutput(); //disable for testing
-    // this.yearOutputTesting(); //enable for testing
+    // this.yearOutput(); //disable for testing
+    this.yearOutputTesting(); //enable for testing
   },
 
   methods: {
-    
     formatTitle(datetime) {
       var cal = new Date(datetime);
       return this.monthNames[cal.getMonth()] + " " + cal.getFullYear();
@@ -1730,9 +1752,59 @@ body {
 .binform-address {
   width: 100%;
   padding-left: 25px;
+  padding-right: 25px;
   font-size: 1.5rem;
   font-weight: 655;
   background-color: #ece5d5;
+}
+
+.binform-info-banner {
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 0.75rem;
+}
+
+.binform-info-text {
+  width: 50%;
+  font-size: 1.25rem;
+  font-weight: 655;
+  margin: auto;
+}
+
+.binform-info-text > a {
+  color: rgb(244, 100, 36);
+}
+
+.binform-key {
+  width: 50%;
+  height: auto;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.bin-key-image {
+  height: 100px;
+  width: auto;
+}
+.bin-form-key {
+  display: flex;
+}
+
+.binform-reminder {
+  width: 100%;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 655;
+}
+
+.binform-reminder > a {
+  color: rgb(244, 100, 36);
 }
 
 .bin-cal-item {
@@ -1803,7 +1875,7 @@ body {
   padding-left: 15px;
   padding-right: 15px;
   background-color: white;
-  // flex-grow: 1; //expand cal containers to fill gap?
+  flex-grow: 1; //expand cal containers to fill gap?
 }
 .binform-pdf {
   display: flex;
