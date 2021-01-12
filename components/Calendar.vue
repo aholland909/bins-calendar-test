@@ -1735,6 +1735,7 @@ body {
   padding-top: 0px;
   margin-top: auto;
   display: flex;
+  max-height: 100%;
 }
 
 .binform-banner {
