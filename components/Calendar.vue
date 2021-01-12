@@ -12,7 +12,7 @@
           <div class="binform-address">{{this.address}}</div>
           <div class="binform-info-banner">
             <div class="binform-info-text">
-              Garden waste collection days will not change. Collection dates can be found at:
+              Your latest collection dates can be found at:
               <a>www.reading.gov.uk/bin-calendar/</a>
             </div>
             <div class="binform-key">
@@ -38,8 +38,10 @@
                 >{{ formatCollectionDate(Object.keys(collections)[0]) }}</div>
                 <div class="bin-cal-item-images-container">
                   <div
+                    role="img"
                     v-for="(service, index) in mapOrder(collections[Object.keys(collections)[0]], item_order, 'Service')"
                     :key="index"
+                    :aria-label="service.Service"
                   >
                     <img class="bin-image" :src="getImage(service.Service)" fill="white" />
                   </div>
@@ -90,8 +92,10 @@
                 >{{ formatCollectionDate(Object.keys(collections)[0]) }}</div>
                 <div class="bin-cal-item-images-container">
                   <div
+                    role="img"
                     v-for="(service, index) in mapOrder(collections[Object.keys(collections)[0]], item_order, 'Service')"
                     :key="index"
+                    :aria-label="service.Service"
                   >
                     <img class="bin-image" :src="getImage(service.Service)" fill="white" />
                   </div>
@@ -1629,7 +1633,7 @@ export default {
         }
       });
     },
-    tempremoveName(service) {
+    serviceNameEdit(service) {
       return service.replace(/Collection Service/g, "");
     },
   },
@@ -1668,18 +1672,18 @@ body {
 
 //bin cal mobile
 @media (max-width: 768px) {
-  .cal-container{
+  .cal-container {
     width: 100%;
   }
-  .page{
+  .page {
     height: 100%;
     width: 100%;
   }
-  .subpage{
+  .subpage {
     width: 100%;
     height: 100%;
   }
-  .binform-container{
+  .binform-container {
     height: auto;
     width: 100%;
   }
@@ -1687,14 +1691,13 @@ body {
     display: flex;
     flex-direction: column;
   }
-  .binform-info-text{
+  .binform-info-text {
     width: 100% !important;
     padding-bottom: 0.5rem;
   }
-  .binform-key{
+  .binform-key {
     width: 100% !important;
   }
-  
 }
 
 @media (max-width: 667px) {
@@ -1705,7 +1708,6 @@ body {
     height: auto;
   }
 }
-
 
 /* .pdf-item {
   width: 100%;
@@ -1933,7 +1935,7 @@ body {
   .binform-info-text {
     width: 50% !important;
   }
-  .binform-key{
+  .binform-key {
     width: 50% !important;
     padding-top: 0.5rem;
   }
