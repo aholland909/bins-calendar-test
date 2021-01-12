@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isLoading" class="cal-container">
-    <b-button class="bin-cal-print-button" style="color:black;margin: 5mm;" @click="pdfgencss()">
+    <b-button class="bin-cal-print-button" @click="pdfgencss()">
       <div class="button-container">
         <b-icon icon="printer" custom-size="mdi-36px" class="material-icons"></b-icon>
         <span style="padding-left:1rem">Download PDF</span>
@@ -222,9 +222,10 @@ export default {
   align-items: center;
   padding: 0.5rem;
 }
-/* .bin-cal-print-button > span{
-  
-} */
+.bin-cal-print-button{
+  color:black;
+  margin: 1.4rem;
+} 
 .cal-container {
   width: 220mm;
 }
@@ -249,6 +250,11 @@ export default {
   }
   .cal-container {
     width: 220mm !important;
+  }
+}
+@media (max-width: 768px) {
+  .cal-container{
+    width: 100%;
   }
 }
 </style>

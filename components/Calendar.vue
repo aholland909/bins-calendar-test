@@ -1666,31 +1666,46 @@ body {
   //   outline: 2cm #ffeaea solid;
 }
 
-@page {
-  size: A4;
-  margin: 0;
-}
-@media print {
-  html,
-  body {
-    width: 210mm;
-    height: 297mm;
+//bin cal mobile
+@media (max-width: 768px) {
+  .cal-container{
+    width: 100%;
   }
-  .page {
-    margin: 0;
-    border: initial;
-    border-radius: initial;
-    width: initial;
-    min-height: initial;
-    box-shadow: initial;
-    background: initial;
-    page-break-after: always;
+  .page{
+    height: 100%;
+    width: 100%;
   }
-  .subpage {
-    height: 284.4mm;
+  .subpage{
+    width: 100%;
+    height: 100%;
+  }
+  .binform-container{
+    height: auto;
+    width: 100%;
+  }
+  .binform-info-banner {
     display: flex;
+    flex-direction: column;
+  }
+  .binform-info-text{
+    width: 100% !important;
+    padding-bottom: 0.5rem;
+  }
+  .binform-key{
+    width: 100% !important;
+  }
+  
+}
+
+@media (max-width: 667px) {
+  .bin-cal {
+    display: block;
+    margin: 5px;
+    width: 100% !important;
+    height: auto;
   }
 }
+
 
 /* .pdf-item {
   width: 100%;
@@ -1723,7 +1738,9 @@ body {
 .binform-banner {
   display: flex;
   justify-content: space-between;
-  height: 45px;
+  max-height: 100px;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
   background-color: rgb(143, 197, 60);
   padding-left: 20px;
   padding-right: 20px;
@@ -1884,5 +1901,47 @@ body {
   height: unset;
   /* width: 210mm; */
   /* height: 100px; */
+}
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+  }
+  .page {
+    margin: 0;
+    border: initial;
+    border-radius: initial;
+    width: initial;
+    min-height: initial;
+    box-shadow: initial;
+    background: initial;
+    page-break-after: always;
+  }
+  .subpage {
+    height: 284.4mm !important;
+    display: flex;
+  }
+  .binform-info-banner {
+    display: flex !important  ;
+    flex-direction: row !important  ;
+  }
+  .binform-info-text {
+    width: 50% !important;
+  }
+  .binform-key{
+    width: 50% !important;
+    padding-top: 0.5rem;
+  }
+  .bin-cal {
+    display: block;
+    margin: 5px;
+    width: 320px !important;
+    height: auto;
+  }
 }
 </style>
