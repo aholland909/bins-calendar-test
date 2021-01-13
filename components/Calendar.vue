@@ -1734,8 +1734,8 @@ body {
 .binform-footer {
   padding-top: 0px;
   margin-top: auto;
-  display: flex;
   max-height: 100%;
+  display: contents;
 }
 
 .binform-banner {

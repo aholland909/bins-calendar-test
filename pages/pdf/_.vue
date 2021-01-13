@@ -220,7 +220,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .bin-cal-print-button{
   color:black;
