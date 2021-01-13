@@ -56,7 +56,7 @@ export default {
     Calendar,
   },
   mounted() {
-    this.loadingComponent = this.$buefy.loading.open(); //disable for testing
+    // this.loadingComponent = this.$buefy.loading.open(); //disable for testing
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
     this.postcode = pathArray[1];
@@ -73,8 +73,8 @@ export default {
     },
     domRendered() {
       console.log("Cal Has Rendered");
-      this.isLoading = false; //disable for testing
-      this.loadingComponent.close(); //disable for testing
+      // this.isLoading = false; //disable for testing
+      // this.loadingComponent.close(); //disable for testing
 
       // setTimeout(() => {
       //       if (process.browser) {
@@ -214,48 +214,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.bin-cal-print-button{
-  color:black;
-  margin: 1.4rem;
-} 
-.cal-container {
-  width: 220mm;
-}
-
-* {
-  -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
-  color-adjust: exact !important; /*Firefox*/
-}
-@page {
-  size: auto; /* auto is the initial value */
-  width: 100%;
-  height: 100%;
-  /* this affects the margin in the printer settings */
-  margin-top: 0mm;
-  margin-bottom: 0mm;
-  margin-right: 0mm;
-  margin-left: 0mm;
-}
-@media print {
-  .bin-cal-print-button {
-    display: none;
-  }
-  .cal-container {
-    width: 220mm !important;
-  }
-}
-@media (max-width: 768px) {
-  .cal-container{
-    width: 100%;
-  }
-}
-</style>
