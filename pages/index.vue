@@ -122,14 +122,14 @@ export default {
       collectionDisplay: [],
       date: [],
       dates: [],
-      rbcapi: process.env.RBCAPI_URL,
+      rbcapi: process.env.rbcapi,
       // wp: process.env.WP_URL,
       // base_url: process.env.BASE_URL,
     };
   },
   mounted(){
-    console.log(process.env)
-    console.log(this.rbcapi)
+    console.log(process.env.RBCAPI_URL)
+    console.log(process.env.rbcapi)
   },
   methods: {
     pdfgencss() {

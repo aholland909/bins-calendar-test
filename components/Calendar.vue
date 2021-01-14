@@ -1343,7 +1343,7 @@ export default {
       },
       collectionDisplay: [],
       newCollections: [],
-      rbcapi: process.env.RBCAPI_URL,
+      rbcapi: process.env.rbcapi,
     };
   },
 
