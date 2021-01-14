@@ -127,6 +127,10 @@ export default {
       // base_url: process.env.BASE_URL,
     };
   },
+  mounted(){
+    console.log(process.env)
+    console.log(this.rbcapi)
+  },
   methods: {
     pdfgencss() {
       console.log("test pdf output with css");
