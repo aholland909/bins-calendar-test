@@ -122,7 +122,7 @@ export default {
       collectionDisplay: [],
       date: [],
       dates: [],
-      rbcapi: process.env.RBCAPI,
+      rbcapi: process.env.RBCAPI_URL,
       // wp: process.env.WP_URL,
       // base_url: process.env.BASE_URL,
     };
