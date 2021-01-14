@@ -122,6 +122,7 @@ export default {
       collectionDisplay: [],
       date: [],
       dates: [],
+      rbcapi: process.env.RBCAPI,
       // wp: process.env.WP_URL,
       // base_url: process.env.BASE_URL,
     };
@@ -142,9 +143,15 @@ export default {
         });
       } else {
         //might not need postcode!
-        var calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "")
+        var calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "");
         this.$router.push({
-          path: "/pdf/" + this.selected.AccountSiteUprn + "/" + this.postcode + "/" + calendaraddress,
+          path:
+            "/pdf/" +
+            this.selected.AccountSiteUprn +
+            "/" +
+            this.postcode +
+            "/" +
+            calendaraddress,
         });
       }
     },
@@ -156,7 +163,7 @@ export default {
       if (this.valid_postcode(name)) {
         this.isFetching = true;
         axios
-          .get("https://api.reading.gov.uk/rbc/getaddresses/" + name)
+          .get(this.rbcapi + "rbc/getaddresses/" + name)
           .then(({ data }) => {
             this.data = [];
             if (data.Addresses != null) {
@@ -206,10 +213,7 @@ export default {
       this.isFetching = true;
       this.selected = selected;
       axios
-        .get(
-          "https://api.reading.gov.uk/rbc/mycollections/" +
-            this.selected.AccountSiteUprn
-        )
+        .get(this.rbcapi + "rbc/mycollections/" + this.selected.AccountSiteUprn)
         .then(({ data }) => {
           this.collections = [];
           if (data.Error == "No results returned") {

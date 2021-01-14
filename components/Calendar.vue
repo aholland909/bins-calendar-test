@@ -1343,6 +1343,7 @@ export default {
       },
       collectionDisplay: [],
       newCollections: [],
+      rbcapi: process.env.RBCAPI,
     };
   },
 
@@ -1507,11 +1508,7 @@ export default {
       //   console.log("formatted data " + formattedstartDate);
       axios
         .get(
-          "https://api.reading.gov.uk/" +
-            "rbc/mycollections/" +
-            uprn +
-            "/" +
-            formattedstartDate
+          this.rbcapi + "rbc/mycollections/" + uprn + "/" + formattedstartDate
         )
         .then((response) => {
           // handle success
