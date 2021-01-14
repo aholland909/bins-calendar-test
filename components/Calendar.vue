@@ -1349,8 +1349,8 @@ export default {
   mounted() {
     //start getcollections
     // console.log(this.groupedCollectionsTemp);
-    // this.yearOutput(); //disable for testing
-    this.yearOutputTesting(); //enable for testing
+    this.yearOutput(); //disable for testing
+    // this.yearOutputTesting(); //enable for testing
   },
 
   methods: {

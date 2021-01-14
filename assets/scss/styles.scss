@@ -109,12 +109,6 @@ body {
     margin: 0;
     padding: 0;
 }
-* {
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
-    color-adjust: exact !important; /*Firefox*/
-}
 .page {
     width: 210mm;
     height: 297mm;
@@ -377,16 +371,12 @@ body {
     margin-right: 0mm;
     margin-left: 0mm;
 }
-// @page {
-//     size: auto; /* auto is the initial value */
-//     width: 100%;
-//     height: 100%;
-//     /* this affects the margin in the printer settings */
-//     margin-top: 0mm;
-//     margin-bottom: 0mm;
-//     margin-right: 0mm;
-//     margin-left: 0mm;
-// }
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
+    color-adjust: exact !important; /*Firefox*/
+}
 @media print {
     html,
     body {
@@ -394,9 +384,9 @@ body {
         height: 297mm;
     }
     .bin-cal-print-button {
-        display: none ;
+        display: none;
     }
-    .bin-cal-print-button{
+    .bin-cal-print-button {
         display: none !important;
     }
     .cal-container {
@@ -450,6 +440,24 @@ body {
         margin-top: auto;
         max-height: 100%;
         display: contents;
+    }
+    //change height of page
+    @-moz-document url-prefix() {
+        html,
+        body {
+            width: 210mm;
+            height: 296mm;
+        }
+
+        .page {
+            size: A4;
+            height: 296mm;
+        }
+
+        .subpage {
+            width: 210mm;
+            height: 296mm;
+        }
     }
 }
 
