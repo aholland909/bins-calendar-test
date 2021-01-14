@@ -128,7 +128,6 @@ export default {
     };
   },
   mounted(){
-    console.log(process.env.RBCAPI_URL)
     console.log(process.env.rbcapi)
   },
   methods: {
