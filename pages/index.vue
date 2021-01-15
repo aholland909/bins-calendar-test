@@ -1,34 +1,5 @@
 <template>
-  <div class="container" id="nodeToRenderAsPDF">
-    <client-only>
-      <vue-html2pdf
-        :show-layout="controlValue.showLayout"
-        :float-layout="controlValue.floatLayout"
-        :enable-download="controlValue.enableDownload"
-        :preview-modal="controlValue.previewModal"
-        :filename="controlValue.filename"
-        :paginate-elements-by-height="controlValue.paginateElementsByHeight"
-        :pdf-quality="controlValue.pdfQuality"
-        :pdf-format="controlValue.pdfFormat"
-        :pdf-orientation="controlValue.pdfOrientation"
-        :pdf-content-width="controlValue.pdfContentWidth"
-        :manual-pagination="controlValue.manualPagination"
-        :html-to-pdf-options="htmlToPdfOptions"
-        @progress="onProgress($event)"
-        @hasDownloaded="hasDownloaded($event)"
-        ref="html2Pdf"
-      >
-        <Calendar
-          v-if="this.selected && this.getFullYear"
-          :uprn="this.selected.AccountSiteUprn"
-          :postcode="this.postcode"
-          :address="this.calendaraddress"
-          @domRendered="domRendered()"
-          slot="pdf-content"
-        />
-      </vue-html2pdf>
-    </client-only>
-
+  <div class="container">
     <div class="binform">
       <h1 class="subtitle">When is my bin collected?</h1>
       <b-field class="mainsearch" type="is-black">
@@ -137,7 +108,6 @@ import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
 import jsPDF from "jspdf";
-import Calendar from "@/components/Calendar";
 import fuzzysort from "fuzzysort";
 
 export default {
@@ -165,109 +135,9 @@ export default {
       collectionDisplay: [],
       date: [],
       dates: [],
-      controlValue: {
-        showLayout: false,
-        floatLayout: true,
-        enableDownload: false,
-        previewModal: true,
-        paginateElementsByHeight: 1100,
-        manualPagination: false,
-        filename: "HeeHee",
-        pdfQuality: 2,
-        pdfFormat: "a4",
-        pdfOrientation: "portrait",
-        pdfContentWidth: "800px",
-      },
-    };
-  },
-  components: {
-    Calendar,
-  },
-  computed: {
-    htmlToPdfOptions() {
-      return {
-        margin: 0,
-        filename: "heehee.pdf",
-        image: {
-          type: "jpeg",
-          quality: 0.98,
-        },
-        enableLinks: true,
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-        },
-        jsPDF: {
-          unit: "in",
-          format: "a4",
-          orientation: "portrait",
-        },
-      };
-    },
+    }
   },
   methods: {
-    async downloadPdf() {
-      //check we have postcode and uprn
-      //if false, display modal asking for postcode
-      if (this.selected == null) {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
-      } else {
-        //might not need postcode! change to regex for global
-        this.calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "");
-
-        //set loading state of button
-        this.getFullYear = true;
-        this.contentRendered = false;
-      }
-    },
-    onProgress(progress) {
-      this.progress = progress;
-      console.log(`PDF generation progress: ${progress}%`);
-    },
-    hasDownloaded(blobPdf) {
-      console.log(`PDF has downloaded yehey`);
-      this.getFullYear = false;
-      // console.log(blobPdf);
-    },
-    domRendered() {
-      console.log("Dom Has Rendered and get request done");
-      this.contentRendered = true;
-      this.$refs.html2Pdf.generatePdf();
-    },
-    pdfgencss() {
-      console.log("test pdf output with css");
-      if (process.browser) {
-        window.print();
-      }
-    },
-    gotoFullYear() {
-      if (this.selected == null) {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
-      } else {
-        //might not need postcode! change to regex for global
-        var calendaraddress = this.selected.SiteShortAddress.replaceAll(
-          ",",
-          ""
-        );
-        this.$router.push({
-          path:
-            "/pdf/" +
-            this.selected.AccountSiteUprn +
-            "/" +
-            this.postcode +
-            "/" +
-            calendaraddress,
-        });
-      }
-    },
     getAsyncData: debounce(function (name) {
       if (!name.length) {
         this.data = [];
