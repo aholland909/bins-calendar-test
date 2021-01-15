@@ -146,7 +146,7 @@ export default {
         });
       } else {
         //might not need postcode!
-        var calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "");
+        var calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "").toUpperCase();
         this.$router.push({
           path:
             "/pdf/" +

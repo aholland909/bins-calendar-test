@@ -13,7 +13,7 @@
           <div class="binform-info-banner">
             <div class="binform-info-text">
               Your latest collection dates can be found at:
-              <a>www.reading.gov.uk/bin-calendar/</a>
+              <a href="https://www.reading.gov.uk/bin-calendar/">www.reading.gov.uk/bin-calendar/</a>
             </div>
             <div class="binform-key">
               <div v-for="n in 4" :key="n">
@@ -23,7 +23,7 @@
           </div>
           <div class="binform-reminder">
             For a reminder of what you can put in each bin please visit:
-            <a>www.reading.gov.uk/recycling</a>
+            <a href="https://www.reading.gov.uk/recycling/">www.reading.gov.uk/recycling/</a>
           </div>
           <div class="bin-cal-container">
             <div
@@ -66,8 +66,8 @@
           </div>
           <div class="binform-info-banner">
             <div class="binform-info-text">
-              Garden waste collection days will not change. Collection dates can be found at:
-              <a>www.reading.gov.uk/bin-calendar/</a>
+              Your latest collection dates can be found at:
+              <a href="https://www.reading.gov.uk/bin-calendar/">www.reading.gov.uk/bin-calendar/</a>
             </div>
             <div class="binform-key">
               <div v-for="n in 4" :key="n">
@@ -77,7 +77,7 @@
           </div>
           <div class="binform-reminder">
             For a reminder of what you can put in each bin please visit:
-            <a>www.reading.gov.uk/recycling</a>
+            <a href="https://www.reading.gov.uk/recycling/">www.reading.gov.uk/recycling/</a>
           </div>
           <div class="bin-cal-container">
             <div
