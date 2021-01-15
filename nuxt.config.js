@@ -50,6 +50,10 @@ export default {
     '@nuxtjs/dotenv',
     'nuxt-buefy',
   ],
+  env: {
+    get_address_io_key: process.env.GETADDRESSIOKEY,
+    rbcapi: process.env.RBCAPI_URL
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options

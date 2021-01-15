@@ -87,10 +87,10 @@
         </b-field>
       </div>
       <!-- need to change error message -->
-      <!-- <div v-if="collectionsError" class="tile is-child box">
-        <p>No kerbside collection for {{selected.SiteShortAddress}}.</p>
+      <div v-if="collectionsError" class="tile is-child box">
+        <p>No kerbside collection for {{userSelectAddress}}.</p>
         <p>If this property is a flat there will be an alternative collection arrangement.</p>
-      </div>-->
+      </div>
       <!-- output year collection to test -->
       <div class="tile is-ancestor">
         <div v-if="collections.length" class="tile is-vertical is-parent">
@@ -137,12 +137,13 @@ import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
 import jsPDF from "jspdf";
-import Calendar from "@/components/calendar";
+import Calendar from "@/components/Calendar";
 import fuzzysort from "fuzzysort";
 
 export default {
   data() {
     return {
+      get_address_io_key: process.env.get_address_io_key,
       name: "",
       postcode: "",
       calendaraddress: "",
@@ -279,7 +280,7 @@ export default {
             "https://api.getaddress.io/autocomplete/" +
               name +
               "?api-key=" +
-              process.env.GETADDRESSIO
+              this.get_address_io_key
           )
           .then(({ data }) => {
             // this.data = [];
@@ -347,7 +348,7 @@ export default {
           "https://api.getaddress.io" +
             selected.url +
             "?api-key=" +
-            process.env.GETADDRESSIO
+            this.get_address_io_key
         )
         .then(({ data }) => {
           if (
@@ -389,8 +390,9 @@ export default {
                     .then(({ data }) => {
                       this.collections = [];
                       console.log(data.Collections);
+                      console.log(data.Error);
                       // No kerbside collection
-                      if (data.Error == "No results returned") {
+                      if (data.Error == "No results returned" || data.Error) {
                         this.collectionsError = true;
                       } else {
                         data.Collections.forEach((item) =>
