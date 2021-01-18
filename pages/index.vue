@@ -65,8 +65,8 @@
             <p class="title is-2">{{changeServiceName(c.Service)}}</p>
             <!-- <p>{{c.Day}}</p> -->
             <p>{{getDay(c.Date)}} - {{formatDate(c.Date)}}</p>
-            <div class="bin-image" id="icon">
-              <img class="image is-64x64" :src="getImage(c.Service)" fill="white" />
+            <div class="bin-image-container" id="icon">
+              <img class="bin-image" :src="getImage(c.Service)" fill="white" />
             </div>
 
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" :open="false">
@@ -289,16 +289,16 @@ export default {
     },
     getImage(serviceName) {
       if (serviceName == "Recycling Collection Service") {
-        return require("~/assets/icons/" + "redWaste.svg");
+        return require("~/assets/icons/" + "redWaste.png");
       }
       if (serviceName == "Domestic Waste Collection Service") {
-        return require("~/assets/icons/" + "greyWaste.svg");
+        return require("~/assets/icons/" + "greyWaste.png");
       }
       if (serviceName == "Garden Waste Collection Service") {
-        return require("~/assets/icons/" + "greenWaste.svg");
+        return require("~/assets/icons/" + "greenWaste.png");
       }
       if (serviceName == "Food Waste Collection Service") {
-        return require("~/assets/icons/" + "foodWaste.svg");
+        return require("~/assets/icons/" + "foodWaste.png");
       }
     },
     binContent(serviceName) {
@@ -393,7 +393,11 @@ export default {
 .links {
   padding-top: 15px;
 }
-.bin-image {
+.bin-image{
+  height: 64px;
+  width: 64px;
+}
+.bin-image-container {
   float: left;
   padding-top: 20px;
 }
