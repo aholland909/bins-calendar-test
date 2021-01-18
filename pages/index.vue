@@ -395,7 +395,7 @@ export default {
 }
 .bin-image{
   height: 64px;
-  width: 64px;
+  width: auto;
 }
 .bin-image-container {
   float: left;
