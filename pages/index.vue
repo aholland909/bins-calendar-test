@@ -2,9 +2,9 @@
   <div class="container" id="container">
     <div class="binlookup">
       <h1 class="binlookup-title">Bin test calendar pdf test</h1>
-      <p class="binlookup-subtitle">
+      <!-- <p class="binlookup-subtitle">
         Printable annual collection calendars are not currently available.
-      </p>
+      </p> -->
       <b-field class="mainsearch" type="is-black">
         <b-autocomplete
           class="searchbox"
