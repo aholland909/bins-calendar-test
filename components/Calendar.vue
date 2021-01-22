@@ -9,21 +9,28 @@
             </div>
             <!-- <div class="binform-banner-round">A</div> -->
           </div>
-          <div class="binform-address">{{this.address}}</div>
+          <div class="binform-address">{{ this.address }}</div>
           <div class="binform-info-banner">
             <div class="binform-info-text">
               Your latest collection dates can be found at:
-              <a href="https://www.reading.gov.uk/bin-calendar/">www.reading.gov.uk/bin-calendar/</a>
+              <a href="https://www.reading.gov.uk/bin-calendar/"
+                >www.reading.gov.uk/bin-calendar/</a
+              >
             </div>
             <div class="binform-key">
               <div v-for="n in 4" :key="n">
-                <img class="bin-key-image" :src="require(`~/assets/icons/binKey/binimage${n}.jpg`)" />
+                <img
+                  class="bin-key-image"
+                  :src="require(`~/assets/icons/binKey/binimage${n}.jpg`)"
+                />
               </div>
             </div>
           </div>
           <div class="binform-reminder">
             For a reminder of what you can put in each bin please visit:
-            <a href="https://www.reading.gov.uk/recycling/">www.reading.gov.uk/recycling/</a>
+            <a href="https://www.reading.gov.uk/recycling/"
+              >www.reading.gov.uk/recycling/</a
+            >
           </div>
           <div class="bin-cal-container">
             <div
@@ -32,18 +39,30 @@
               :key="month"
             >
               <div class="bin-cal-heading">{{ month }}</div>
-              <div class="bin-cal-item" v-for="(collections, n) in collectionArray" :key="n">
-                <div
-                  class="bin-cal-item-date"
-                >{{ formatCollectionDate(Object.keys(collections)[0]) }}</div>
+              <div
+                class="bin-cal-item"
+                v-for="(collections, n) in collectionArray"
+                :key="n"
+              >
+                <div class="bin-cal-item-date">
+                  {{ formatCollectionDate(Object.keys(collections)[0]) }}
+                </div>
                 <div class="bin-cal-item-images-container">
                   <div
                     role="img"
-                    v-for="(service, index) in mapOrder(collections[Object.keys(collections)[0]], item_order, 'Service')"
+                    v-for="(service, index) in mapOrder(
+                      collections[Object.keys(collections)[0]],
+                      item_order,
+                      'Service'
+                    )"
                     :key="index"
                     :aria-label="service.Service"
                   >
-                    <img class="bin-image" :src="getImage(service.Service)" fill="white" />
+                    <img
+                      class="bin-image"
+                      :src="getImage(service.Service)"
+                      fill="white"
+                    />
                   </div>
                 </div>
               </div>
@@ -67,17 +86,24 @@
           <div class="binform-info-banner">
             <div class="binform-info-text">
               Your latest collection dates can be found at:
-              <a href="https://www.reading.gov.uk/bin-calendar/">www.reading.gov.uk/bin-calendar/</a>
+              <a href="https://www.reading.gov.uk/bin-calendar/"
+                >www.reading.gov.uk/bin-calendar/</a
+              >
             </div>
             <div class="binform-key">
               <div v-for="n in 4" :key="n">
-                <img class="bin-key-image" :src="require(`~/assets/icons/binKey/binimage${n}.jpg`)" />
+                <img
+                  class="bin-key-image"
+                  :src="require(`~/assets/icons/binKey/binimage${n}.jpg`)"
+                />
               </div>
             </div>
           </div>
           <div class="binform-reminder">
             For a reminder of what you can put in each bin please visit:
-            <a href="https://www.reading.gov.uk/recycling/">www.reading.gov.uk/recycling/</a>
+            <a href="https://www.reading.gov.uk/recycling/"
+              >www.reading.gov.uk/recycling/</a
+            >
           </div>
           <div class="bin-cal-container">
             <div
@@ -86,18 +112,30 @@
               :key="month"
             >
               <div class="bin-cal-heading">{{ month }}</div>
-              <div class="bin-cal-item" v-for="(collections, n) in collectionArray" :key="n">
-                <div
-                  class="bin-cal-item-date"
-                >{{ formatCollectionDate(Object.keys(collections)[0]) }}</div>
+              <div
+                class="bin-cal-item"
+                v-for="(collections, n) in collectionArray"
+                :key="n"
+              >
+                <div class="bin-cal-item-date">
+                  {{ formatCollectionDate(Object.keys(collections)[0]) }}
+                </div>
                 <div class="bin-cal-item-images-container">
                   <div
                     role="img"
-                    v-for="(service, index) in mapOrder(collections[Object.keys(collections)[0]], item_order, 'Service')"
+                    v-for="(service, index) in mapOrder(
+                      collections[Object.keys(collections)[0]],
+                      item_order,
+                      'Service'
+                    )"
                     :key="index"
                     :aria-label="service.Service"
                   >
-                    <img class="bin-image" :src="getImage(service.Service)" fill="white" />
+                    <img
+                      class="bin-image"
+                      :src="getImage(service.Service)"
+                      fill="white"
+                    />
                   </div>
                 </div>
               </div>
@@ -122,17 +160,12 @@ export default {
     uprn: {
       type: String,
       required: false,
-      default: "310034227",
-    },
-    postcode: {
-      type: String,
-      required: false,
       default: "",
     },
     address: {
       type: String,
       required: false,
-      default: "9 BLUNDELLS ROAD RG30 4TR",
+      default: "",
     },
   },
   data() {
@@ -1494,6 +1527,9 @@ export default {
           title: "Oops!",
           message: "Please enter a postcode and select an address!",
           confirmText: "Ok!",
+        });
+        this.$router.push({
+          path: "/",
         });
       }
     },

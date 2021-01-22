@@ -183,8 +183,6 @@ export default {
             "/pdf/" +
             this.selected.AccountSiteUprn +
             "/" +
-            this.postcode +
-            "/" +
             calendaraddress,
         });
       }

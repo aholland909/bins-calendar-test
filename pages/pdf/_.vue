@@ -9,7 +9,6 @@
 
     <Calendar
       :uprn="this.uprn"
-      :postcode="this.postcode"
       :address="this.address"
       @domRendered="domRendered()"
     />
@@ -32,7 +31,6 @@ export default {
       isFullPage: true,
       path: this.$route.params.pathMatch,
       uprn: "",
-      postcode: "",
       address: "",
       collections: [],
       collectionDisplay: [],
@@ -45,8 +43,7 @@ export default {
     this.loadingComponent = this.$buefy.loading.open(); //disable for testing
     var pathArray = this.path.split("/");
     this.uprn = pathArray[0];
-    this.postcode = pathArray[1];
-    this.address = pathArray[2];
+    this.address = pathArray[1];
     // this.yearOutput();
     this.isLoading = false;
   },
