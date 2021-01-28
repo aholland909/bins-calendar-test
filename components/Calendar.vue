@@ -12,10 +12,10 @@
           <div class="binform-address">{{ this.address }}</div>
           <div class="binform-info-banner">
             <div class="binform-info-text">
-              Your latest collection dates can be found at:
-              <a href="https://www.reading.gov.uk/bin-calendar/"
-                >www.reading.gov.uk/bin-calendar/</a
-              >
+              For a reminder of what you can put in each bin please visit:
+              <a href="https://www.reading.gov.uk/recycling/"
+                >www.reading.gov.uk/recycling/
+              </a>
             </div>
             <div class="binform-key">
               <div v-for="n in 4" :key="n">
@@ -27,10 +27,13 @@
             </div>
           </div>
           <div class="binform-reminder">
-            For a reminder of what you can put in each bin please visit:
-            <a href="https://www.reading.gov.uk/recycling/"
-              >www.reading.gov.uk/recycling/</a
-            >
+            Your latest collection dates can be found at:
+            <a href="https://www.reading.gov.uk/bin-calendar/"
+              >www.reading.gov.uk/bin-calendar/
+            </a>
+            <p class="extra">
+              * No green waste collections over Christmas / New Year period
+            </p>
           </div>
           <div class="bin-cal-container">
             <div
@@ -83,12 +86,13 @@
             </div>
             <!-- <div class="binform-banner-round">A</div> -->
           </div>
+          <div class="binform-address">{{ this.address }}</div>
           <div class="binform-info-banner">
             <div class="binform-info-text">
-              Your latest collection dates can be found at:
-              <a href="https://www.reading.gov.uk/bin-calendar/"
-                >www.reading.gov.uk/bin-calendar/</a
-              >
+              For a reminder of what you can put in each bin please visit:
+              <a href="https://www.reading.gov.uk/recycling/"
+                >www.reading.gov.uk/recycling/
+              </a>
             </div>
             <div class="binform-key">
               <div v-for="n in 4" :key="n">
@@ -100,10 +104,13 @@
             </div>
           </div>
           <div class="binform-reminder">
-            For a reminder of what you can put in each bin please visit:
-            <a href="https://www.reading.gov.uk/recycling/"
-              >www.reading.gov.uk/recycling/</a
-            >
+            Your latest collection dates can be found at:
+            <a href="https://www.reading.gov.uk/bin-calendar/"
+              >www.reading.gov.uk/bin-calendar/
+            </a>
+            <p class="extra">
+              * No green waste collections over Christmas / New Year period
+            </p>
           </div>
           <div class="bin-cal-container">
             <div
