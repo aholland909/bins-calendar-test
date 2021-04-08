@@ -1,6 +1,17 @@
-# Bin test calendar
+# Reading Bin Calendar
 
-> Bin test calendar
+> Test project for Reading bin calendar
+
+## Sites
+- Dev site: https://www.bincalendar.readingdev.com/
+- Live site: https://www.reading.gov.uk/bin-calendar/
+
+## Features 
+
+- Uses [Reading API](http://api.reading.gov.uk/) to get a users collections from their address:  https://api.reading.gov.uk/#/rbc/get_rbc_mycollections__UPRN_
+
+- [Buefy](https://buefy.org/) UI components, mainsearch, collection cards, buttons
+
 
 ## Build Setup
 
