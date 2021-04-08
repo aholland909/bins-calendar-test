@@ -1,10 +1,6 @@
 
 
 export default {
-  env: {
-    wordpressdata: "https://www.wordpress.com"
-    
-  },
   mode: 'universal',
   /*
   ** Headers of the page
@@ -50,6 +46,9 @@ export default {
     '@nuxtjs/dotenv',
     'nuxt-buefy',
   ],
+  env: {
+    rbcapi: process.env.RBCAPI_URL
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options

@@ -4,33 +4,71 @@
 // Set your colors
 $primary: #8c67ef;
 $primary-invert: findColorInvert($primary);
-$twitter: #4099FF;
+$twitter: #4099ff;
 $twitter-invert: findColorInvert($twitter);
 $transparent: rgba(0, 0, 0, 0);
-//bin colors 
+//bin colors
 $recycling: #800000;
 $recycling-invert: findColorInvert($recycling);
 $rubbish: #808080;
 $rubbish-invert: findColorInvert($rubbish);
-$garden-waste: #228B22;
+$garden-waste: #228b22;
 $garden-waste-invert: findColorInvert($garden-waste);
 //$food-waste:;
 
 $colors: (
-    "white": ($white, $black),
-    "black": ($black, $white),
-    "light": ($light, $light-invert),
-    "dark": ($dark, $dark-invert),
-    "primary": ($primary, $primary-invert),
-    "info": ($info, $info-invert),
-    "success": ($success, $success-invert),
-    "warning": ($warning, $warning-invert),
-    "danger": ($danger, $danger-invert),
-    "twitter": ($twitter, $twitter-invert),
-    "recycling":($recycling, $recycling-invert),
-    "rubbish":($rubbish, $rubbish-invert),
-    "garden":($garden-waste, $garden-waste-invert),
-    
+    "white": (
+        $white,
+        $black,
+    ),
+    "black": (
+        $black,
+        $white,
+    ),
+    "light": (
+        $light,
+        $light-invert,
+    ),
+    "dark": (
+        $dark,
+        $dark-invert,
+    ),
+    "primary": (
+        $primary,
+        $primary-invert,
+    ),
+    "info": (
+        $info,
+        $info-invert,
+    ),
+    "success": (
+        $success,
+        $success-invert,
+    ),
+    "warning": (
+        $warning,
+        $warning-invert,
+    ),
+    "danger": (
+        $danger,
+        $danger-invert,
+    ),
+    "twitter": (
+        $twitter,
+        $twitter-invert,
+    ),
+    "recycling": (
+        $recycling,
+        $recycling-invert,
+    ),
+    "rubbish": (
+        $rubbish,
+        $rubbish-invert,
+    ),
+    "garden": (
+        $garden-waste,
+        $garden-waste-invert,
+    ),
 );
 
 // Links
@@ -49,11 +87,503 @@ $loading-background: black;
 
 $size-7: 0.2rem;
 
-//pdf modal
-.vue-html2pdf .pdf-preview iframe {
-    border: 0;
-    height: 100%;
+//bin lookup
+.binlookup {
+    padding-top: 2rem;
+    margin-left: 5px;
+    margin-right: 5px;
+    width: 80%;
 }
+
+.binlookup > .binlookup-title {
+    font-weight: 300;
+    font-size: 42px;
+    color: #000000;
+    word-spacing: 5px;
+}
+
+.binlookup > .binlookup-subtitle {
+    margin-bottom: 1.5rem;
+}
+
+.binlookup > .mainsearch {
+    display: flex !important;
+    justify-content: left !important;
+}
+
+.binlookup > .mainsearch > .searchbox {
+    display: inline-block;
+    width: 100%;
+}
+
+.binlookup > .mainsearch > .button {
+    background-color: black;
+    border-radius: 0%;
+}
+
+.binlookup > .button-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0.75rem;
+}
+
+.binlookup > .button-container > .button {
+    background-color: black;
+    color: white;
+    border-radius: 0%;
+}
+
+.binlookup > .collections-container > .collections > .collection > .image-container {
+    float: left;
+    padding-top: 20px;
+}
+
+.binlookup > .collections-container > .collections > .collection > .image-container > .image {
+    height: 64px;
+    width: auto;
+}
+
+//bin-calendar component
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.bin-cal-print-button {
+    color: black;
+    margin: 1.4rem;
+}
+.cal-container {
+    width: 220mm;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.page {
+    width: 210mm;
+    height: 297mm;
+
+    margin: 10mm auto;
+    border: 1px #d3d3d3 solid;
+    border-radius: 1px;
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.subpage {
+    //   padding: 1cm;
+    //   border: 5px red solid;
+    width: 210mm;
+    height: 297mm;
+    display: flex;
+    //   outline: 2cm #ffeaea solid;
+}
+//bin lookup mobile
+@media only screen and (max-width: 700px) {
+    .binlookup {
+        width: 100%;
+    }
+}
+//bin cal mobile
+@media (max-width: 768px) {
+    .cal-container {
+        width: 100%;
+    }
+    .page {
+        height: 100%;
+        width: 100%;
+    }
+    .subpage {
+        width: 100%;
+        height: 100%;
+    }
+    .binform-container {
+        height: auto;
+        width: 100%;
+    }
+    .binform-info-banner {
+        display: flex;
+        flex-direction: column;
+    }
+    .binform-info-text {
+        width: 100% !important;
+        padding-bottom: 0.5rem;
+    }
+    .binform-key {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 667px) {
+    .bin-cal {
+        display: block;
+        margin: 5px;
+        width: 100% !important;
+        height: auto;
+    }
+}
+
+/* .pdf-item {
+    width: 100%;
+    height: 285mm;
+    border-style: solid;
+    border-width: 2px;
+    display: flex;
+  }
+  .pdf-content {
+    display: flex;
+    width: 100%;
+    height: auto;
+    background: white;
+  } */
+.binform-container {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+    height: auto;
+}
+.binform-footer {
+    padding-top: 0px;
+    margin-top: auto;
+    max-height: 100%;
+    display: contents;
+}
+
+.binform-banner {
+    display: flex;
+    justify-content: space-between;
+    max-height: 100px;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    background-color: rgb(143, 197, 60);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.binform-banner-text {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 5px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.binform-banner-round {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 5px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.binform-address {
+    width: 100%;
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 1.5rem;
+    font-weight: 655;
+    background-color: #ece5d5;
+}
+
+.binform-info-banner {
+    width: 100%;
+    height: auto;
+    display: flex;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 0.75rem;
+}
+
+.binform-info-text {
+    width: 50%;
+    font-size: 1.25rem;
+    font-weight: 655;
+    margin: auto;
+}
+
+.binform-info-text > a {
+    color: rgb(244, 100, 36);
+}
+
+.binform-info-text > a:hover {
+    color: #0000ee;
+}
+
+.binform-info-text > a:visited {
+    color: #660099;
+}
+
+.binform-key {
+    width: 50%;
+    height: auto;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.bin-key-image {
+    height: 100px;
+    width: auto;
+}
+.bin-form-key {
+    display: flex;
+}
+
+.binform-reminder {
+    width: 100%;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 655;
+}
+
+.binform-reminder > a {
+    color: rgb(244, 100, 36);
+}
+
+.binform-reminder > a:hover {
+    color: #0000ee;
+}
+
+.binform-reminder > a:visited {
+    color: #660099;
+}
+
+.bin-cal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    // padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 3px;
+}
+
+.bin-cal-heading {
+    background-color: rgb(244, 100, 36);
+    color: white;
+    padding-left: 15px;
+    font-size: x-large;
+    font-weight: 700;
+    // padding-bottom: 2px;
+    /* padding-top: 2px;  */
+}
+.bin-cal-item-date {
+    color: #363636;
+    font-weight: 700;
+    line-height: 1.125;
+    font-size: large;
+}
+
+.bin-cal-item-images-container {
+    display: flex;
+    height: 24px;
+    width: auto;
+}
+.bin-image {
+    height: 24px;
+    width: auto;
+}
+
+.binform-address {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.key-icons {
+    padding-right: 20px;
+}
+.binform-pdf-key {
+    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bin-cal {
+    display: block;
+    margin: 5px;
+    /* border-style: solid;
+    border-color: #bebdbd;
+    border-radius: 1px; */
+    width: 320px;
+    height: auto;
+}
+.bin-cal-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: white;
+    flex-grow: 1; //expand cal containers to fill gap?
+}
+.binform-pdf {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: unset;
+    /* width: 210mm; */
+    /* height: 100px; */
+}
+@page {
+    size: A4;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    margin-top: 0mm;
+    margin-bottom: 0mm;
+    margin-right: 0mm;
+    margin-left: 0mm;
+}
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
+    color-adjust: exact !important; /*Firefox*/
+}
+@media print {
+    html,
+    body {
+        width: 210mm;
+        height: 297mm;
+    }
+    //bin lookup
+    .binlookup {
+        width: auto !important;
+        padding-top: 0px;
+    }
+    .binlookup-subtitle {
+        display: none !important;
+    }
+    .searchbox {
+        display: none !important;
+    }
+    .mainsearch > .button {
+        display: none !important;
+    }
+    .binlookup > .button-container {
+        display: none;
+    }
+
+    .box, .collection{
+        margin-bottom: 0.1rem !important;
+        padding-bottom: 0.1rem !important;
+        padding-top: 0.1rem !important;
+        box-shadow: none !important;
+    }
+
+    .box, .address{
+        box-shadow: none !important;
+    }
+
+    .binlookup > .collections-container > .collections > .collection > .service{
+        margin-bottom: 0.5rem;
+    }
+
+    .binlookup > .collections-container > .collections > .collection > .info {
+        display: none !important;
+    }
+
+    .binlookup > .collections-container > .collections > .collection > .image-container {
+        display: none;
+    }
+
+    //bin yearly calendar
+    .bin-cal-print-button {
+        display: none;
+    }
+    .bin-cal-print-button {
+        display: none !important;
+    }
+    .cal-container {
+        width: 100% !important;
+    }
+    .page {
+        size: A4;
+        height: 297mm;
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+    }
+    .subpage {
+        height: 100% !important;
+        display: flex;
+    }
+    .binform-info-banner {
+        display: flex !important  ;
+        flex-direction: row !important  ;
+    }
+    .binform-info-text {
+        width: 50% !important;
+    }
+    .binform-key {
+        width: 50% !important;
+        padding-top: 0.5rem;
+    }
+    .bin-cal-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: white;
+        flex-grow: 1; //expand cal containers to fill gap?
+    }
+    .bin-cal {
+        display: block;
+        margin: 5px;
+        width: 320px !important;
+        height: auto;
+    }
+    .binform-footer {
+        padding-top: 0px;
+        margin-top: auto;
+        max-height: 100%;
+        display: contents;
+    }
+    //change height of page
+    @-moz-document url-prefix() {
+        html,
+        body {
+            width: 210mm;
+            height: 296mm;
+        }
+
+        .page {
+            size: A4;
+            height: 296mm;
+        }
+
+        .subpage {
+            width: 210mm;
+            height: 296mm;
+        }
+    }
+}
+
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
