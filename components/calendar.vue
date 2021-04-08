@@ -1498,8 +1498,8 @@ export default {
       todayplusyear.setHours(0, 0, 0, 0);
       todayplusyear.setMonth(new Date().getMonth());
       todayplusyear.setFullYear(today.getFullYear() + 1);
-      console.log(today);
-      console.log(todayplusyear);
+      // console.log(today);
+      // console.log(todayplusyear);
       this.collections = [];
       if (this.uprn != null && this.uprn.length == 9) {
         this.getCollectionByDate(
@@ -1509,7 +1509,7 @@ export default {
           this.collections
         ).then(() => {
           // update other cal
-          console.log(this.collections);
+          // console.log(this.collections);
           var groupedtemp = this.groupByDay(this.collections, "Date");
           // console.log(groupedtemp);
           this.groupedCollections = this.groupByMonth(groupedtemp);

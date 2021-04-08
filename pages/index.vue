@@ -127,8 +127,6 @@
 <script>
 import axios from "axios";
 import debounce from "lodash/debounce";
-import defer from "promise-defer";
-import jsPDF from "jspdf";
 
 export default {
   data() {
@@ -154,52 +152,9 @@ export default {
       date: [],
       dates: [],
       rbcapi: process.env.rbcapi,
-      // wp: process.env.WP_URL,
-      // base_url: process.env.BASE_URL,
     };
   },
-  mounted() {
-    console.log(process.env.rbcapi);
-  },
   methods: {
-    async downloadPdf() {
-      //check we have postcode and uprn
-      //if false, display modal asking for postcode
-      if (this.selected == null) {
-        this.$buefy.dialog.alert({
-          title: "Oops!",
-          message: "Please enter a postcode and select an address!",
-          confirmText: "Ok!",
-        });
-      } else {
-        //might not need postcode! change to regex for global
-        this.calendaraddress = this.selected.SiteShortAddress.replace(/,/g, "");
-
-        //set loading state of button
-        this.getFullYear = true;
-        this.contentRendered = false;
-      }
-    },
-    onProgress(progress) {
-      this.progress = progress;
-      console.log(`PDF generation progress: ${progress}%`);
-    },
-    hasDownloaded(blobPdf) {
-      console.log(`PDF has downloaded yehey`);
-      this.getFullYear = false;
-      // console.log(blobPdf);
-    },
-    domRendered() {
-      console.log("Dom Has Rendered and get request done");
-      this.contentRendered = true;
-      this.$refs.html2Pdf.generatePdf();
-    },
-    pdfgencss() {
-      console.log("test pdf output with css");
-      if (process.browser) {
-        window.print();
-      }
-    },
     gotoFullYear() {
       if (this.selected == null) {
         this.$buefy.dialog.alert({

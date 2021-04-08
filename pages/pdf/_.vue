@@ -16,13 +16,8 @@
 </template>
 
 <script>
-import Calendar from "~/components/Calendar";
-import axios from "axios";
-import debounce from "lodash/debounce";
-import defer from "promise-defer";
-// import * as jsPDF from "jspdf";
+import Calendar from "~/components/calendar";
 
-// yarn add promise-defer
 export default {
   data() {
     return {
@@ -55,15 +50,8 @@ export default {
       }
     },
     domRendered() {
-      console.log("Cal Has Rendered");
       this.isLoading = false; //disable for testing
       this.loadingComponent.close(); //disable for testing
-
-      // setTimeout(() => {
-      //       if (process.browser) {
-      //         window.print();
-      //       }
-      //     }, 2000);
     }
   },
 };
