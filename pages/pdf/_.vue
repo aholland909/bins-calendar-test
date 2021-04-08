@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import Calendar from "@/components/Calendar";
+import Calendar from "~/components/Calendar";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";

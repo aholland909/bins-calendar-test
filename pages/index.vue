@@ -1,7 +1,7 @@
 <template>
   <div class="container" id="container">
     <div class="binlookup">
-      <h1 class="binlookup-title">Bin test calendar pdf test</h1>
+      <h1 class="binlookup-title">When is my bin collected?</h1>
       <!-- <p class="binlookup-subtitle">
         Printable annual collection calendars are not currently available.
       </p> -->
@@ -129,7 +129,6 @@ import axios from "axios";
 import debounce from "lodash/debounce";
 import defer from "promise-defer";
 import jsPDF from "jspdf";
-import Calendar from "@/components/calendar";
 
 export default {
   data() {
